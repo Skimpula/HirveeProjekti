@@ -1,23 +1,44 @@
-﻿namespace HirveeProjekti;
+﻿using System;
+using Microsoft.Maui.Controls;
+using HirveeProjekti.Views;
 
-public partial class MainPage : ContentPage
+namespace HirveeProjekti
 {
-	int count = 0;
+    public partial class MainPage : ContentPage
+    {
+        public MainPage()
+        {
+            InitializeComponent();
+        }
 
-	public MainPage()
-	{
-		InitializeComponent();
-	}
+        private async void GoToAreas(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new AreasPage());
+        }
 
-	private void OnCounterClicked(object? sender, EventArgs e)
-	{
-		count++;
+        private async void GoToCottages(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new CottagesPage());
+        }
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+        private async void GoToCustomers(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new CustomersPage());
+        }
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+        private async void GoToBookings(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new BookingsPage());
+        }
+
+        private async void GoToServices(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ServicesPage());
+        }
+
+        private async void GoToInvoices(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new InvoicesPage());
+        }
+    }
 }
