@@ -1,9 +1,91 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="HirveeProjekti.Views.BookingsPage"
-             Title="Village Newbies Oy">
-             <StackLayout Padding="10">
-        <Label Text="Bookings Page" FontSize="24" HorizontalOptions="Center"/>
-    </StackLayout>
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
+             x:Class="HirveeProjekti.Views.BookingsPage"
+             Title="Varaukset">
+
+    <ContentPage.BindingContext>
+        <vm:BookingViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- 🔹 Otsikko -->
+            <Label Text="Uusi varaus"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- 👤 Asiakas -->
+            <Label Text="Valitse asiakas" FontAttributes="Bold"/>
+            <Picker Title="Asiakas"
+                    ItemsSource="{Binding Customers}"
+                    ItemDisplayBinding="{Binding FullName}"
+                    SelectedItem="{Binding SelectedCustomer}" />
+
+            <!-- 🏡 Mökit -->
+            <Label Text="Valitse mökki" FontAttributes="Bold"/>
+            <Picker Title="Mökki"
+                    ItemsSource="{Binding Cottages}"
+                    ItemDisplayBinding="{Binding Mokkinimi}"
+                    SelectedItem="{Binding SelectedCottage}" />
+
+            <!-- 📅 Päivämäärät -->
+            <Label Text="Alkupäivä" FontAttributes="Bold"/>
+            <DatePicker Date="{Binding StartDate}" />
+
+            <Label Text="Loppupäivä" FontAttributes="Bold"/>
+            <DatePicker Date="{Binding EndDate}" />
+
+            <!-- ⚠️ Virheviesti -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   IsVisible="{Binding HasError}" />
+
+            <!-- ➕ Lisää varaus -->
+            <Button Text="Tee varaus"
+                    Command="{Binding AddBookingCommand}"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="50" />
+
+            <!-- 📋 Lista varauksista -->
+            <Label Text="Nykyiset varaukset"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0"/>
+
+            <CollectionView ItemsSource="{Binding Bookings}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray"
+                               Padding="10"
+                               Margin="0,5"
+                               CornerRadius="5">
+                            <VerticalStackLayout Spacing="5">
+
+                                <Label Text="{Binding VarausId, StringFormat='Varaus #{0}'}"
+                                       FontAttributes="Bold"/>
+                                <Label Text="{Binding CustomerName, StringFormat='Asiakas: {0}'}"/>
+                                <Label Text="{Binding CottageName, StringFormat='Mökki: {0}'}"/>
+                                <Label Text="{Binding StartDate, StringFormat='Alku: {0:dd.MM.yyyy}'}"/>
+                                <Label Text="{Binding EndDate, StringFormat='Loppu: {0:dd.MM.yyyy}'}"/>
+
+                                <Button Text="Poista"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteBookingCommand}"
+                                        CommandParameter="{Binding VarausId}"
+                                        BackgroundColor="#F44336"
+                                        TextColor="White"
+                                        CornerRadius="8"
+                                        HeightRequest="40"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

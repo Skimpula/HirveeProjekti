@@ -1,9 +1,87 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="HirveeProjekti.Views.CustomersPage"
-             Title="Village Newbies Oy">
-             <StackLayout Padding="10">
-        <Label Text="Customers Page" FontSize="24" HorizontalOptions="Center"/>
-    </StackLayout>
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
+             x:Class="HirveeProjekti.Views.CustomersPage"
+             Title="Asiakkaat">
+
+<ContentPage.BindingContext>
+    <vm:CustomerViewModel />
+</ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- 🔹 Otsikko -->
+            <Label Text="Asiakkaiden hallinta"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- ➕ Lisää asiakas -->
+            <Label Text="Lisää uusi asiakas" FontAttributes="Bold"/>
+
+            <Entry Placeholder="Etunimi"
+                   Text="{Binding NewCustomerFirstName}" />
+            <Entry Placeholder="Sukunimi"
+                   Text="{Binding NewCustomerLastName}" />
+            <Entry Placeholder="Lähiosoite"
+                   Text="{Binding NewCustomerAddress}" />
+            <Entry Placeholder="Postinumero"
+                   Text="{Binding NewCustomerPostalCode}" />
+            <Entry Placeholder="Sähköposti"
+                   Keyboard="Email"
+                   Text="{Binding NewCustomerEmail}" />
+            <Entry Placeholder="Puhelinnumero"
+                   Keyboard="Telephone"
+                   Text="{Binding NewCustomerPhone}" />
+
+            <Button Text="Lisää asiakas"
+                    Command="{Binding AddCustomerCommand}"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="50" />
+
+            <!-- ⚠️ Virheviesti -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   IsVisible="{Binding HasError}" />
+
+            <!-- 📋 Lista asiakkaista -->
+            <Label Text="Nykyiset asiakkaat"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0"/>
+
+            <CollectionView ItemsSource="{Binding Customers}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="LightGray"
+                               Padding="10"
+                               Margin="0,5"
+                               CornerRadius="5">
+                            <VerticalStackLayout Spacing="5">
+
+                                <Label Text="{Binding FullName, StringFormat='Nimi: {0}'}"
+                                       FontAttributes="Bold"/>
+                                <Label Text="{Binding Lahiosoite, StringFormat='Osoite: {0}'}"/>
+                                <Label Text="{Binding Postinro, StringFormat='Postinumero: {0}'}"/>
+                                <Label Text="{Binding Email, StringFormat='Sähköposti: {0}'}"/>
+                                <Label Text="{Binding Puhelinnro, StringFormat='Puhelin: {0}'}"/>
+
+                                <Button Text="Poista"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCustomerCommand}"
+                                        CommandParameter="{Binding AsiakasId}"
+                                        BackgroundColor="#F44336"
+                                        TextColor="White"
+                                        CornerRadius="8"
+                                        HeightRequest="40"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
