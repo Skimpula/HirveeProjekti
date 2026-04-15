@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HirveeProjekti.Cottages
+namespace HirveeProjekti.Models
 {
     public class CottageData
     {
@@ -14,12 +14,12 @@ namespace HirveeProjekti.Cottages
 
         public Cottage? GetById(int id)
         {
-            return cottages.FirstOrDefault(c => c.Id == id);
+            return cottages.FirstOrDefault(c => c.MokkiId == id);
         }
 
         public void Add(Cottage cottage)
         {
-            cottage.Id = cottages.Count + 1;
+            cottage.MokkiId = cottages.Count == 0 ? 1 : cottages.Max(c => c.MokkiId) + 1;
             cottages.Add(cottage);
         }
 
@@ -34,36 +34,38 @@ namespace HirveeProjekti.Cottages
 
         public void Update(Cottage updated)
         {
-            var cottage = GetById(updated.Id);
+            var cottage = GetById(updated.MokkiId);
 
             if (cottage != null)
             {
-                cottage.Name = updated.Name;
-                cottage.Address = updated.Address;
-                cottage.Description = updated.Description;
-                cottage.Capacity = updated.Capacity;
-                cottage.PricePerDay = updated.PricePerDay;
-                cottage.Amenities = updated.Amenities;
+                cottage.Mokkinimi = updated.Mokkinimi;
+                cottage.Katuosoite = updated.Katuosoite;
+                cottage.Hinta = updated.Hinta;
+                cottage.Henkilomaara = updated.Henkilomaara;
+                cottage.Varustelu = updated.Varustelu;
+                cottage.AreaName = updated.AreaName;
             }
         }
 
-        public List<Cottage> Search(string? area = null, int? minPersons = null, decimal? maxPrice = null)
+        public List<Cottage> Search(string? area = null, int? minPersons = null, double? maxPrice = null)
         {
             var query = cottages.AsQueryable();
 
             if (!string.IsNullOrEmpty(area))
             {
-                query = query.Where(c => c.Address.Contains(area));
+                query = query.Where(c =>
+                    (!string.IsNullOrEmpty(c.AreaName) && c.AreaName.Contains(area)) ||
+                    (!string.IsNullOrEmpty(c.Katuosoite) && c.Katuosoite.Contains(area)));
             }
 
             if (minPersons.HasValue)
             {
-                query = query.Where(c => c.Capacity >= minPersons.Value);
+                query = query.Where(c => c.Henkilomaara >= minPersons.Value);
             }
 
             if (maxPrice.HasValue)
             {
-                query = query.Where(c => c.PricePerDay <= maxPrice.Value);
+                query = query.Where(c => c.Hinta <= maxPrice.Value);
             }
 
             return query.ToList();
