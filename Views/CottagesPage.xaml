@@ -1,9 +1,86 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="HirveeProjekti.Views.CottagesPage"
-             Title="Village Newbies Oy">
-             <StackLayout Padding="10">
-        <Label Text="Cottages Page" FontSize="24" HorizontalOptions="Center"/>
-    </StackLayout>
+          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+          xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
+          x:Class="HirveeProjekti.Views.CottagesPage"
+          Title="Mökit">
+
+    <ContentPage.BindingContext>
+     <vm:CottageViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+     <VerticalStackLayout Padding="20" Spacing="15">
+
+         <Label Text="Mökkien hallinta"
+             FontSize="28"
+             FontAttributes="Bold"
+             HorizontalOptions="Center" />
+
+         <Label Text="Lisää uusi mökki"
+             FontSize="18"
+             FontAttributes="Bold" />
+
+         <Entry Placeholder="Mökin nimi"
+             Text="{Binding NewCottageName}" />
+         <Entry Placeholder="Alue"
+             Text="{Binding NewCottageArea}" />
+         <Entry Placeholder="Osoite"
+             Text="{Binding NewCottageAddress}" />
+         <Entry Placeholder="Hinta"
+             Keyboard="Numeric"
+             Text="{Binding NewCottagePrice}" />
+         <Entry Placeholder="Henkilömäärä"
+             Keyboard="Numeric"
+             Text="{Binding NewCottageCapacity}" />
+         <Entry Placeholder="Varustelu"
+             Text="{Binding NewCottageEquipment}" />
+
+         <Button Text="Lisää mökki"
+              Command="{Binding AddCottageCommand}"
+              BackgroundColor="#2ECC71"
+              TextColor="White"
+              CornerRadius="10"
+              HeightRequest="48" />
+
+         <Label Text="{Binding ErrorMessage}"
+             TextColor="Red"
+             IsVisible="{Binding HasError}" />
+
+         <Label Text="Nykyiset mökit"
+             FontSize="20"
+             FontAttributes="Bold"
+             Margin="0,15,0,0" />
+
+         <CollectionView ItemsSource="{Binding Cottages}">
+          <CollectionView.ItemTemplate>
+              <DataTemplate>
+               <Frame BorderColor="LightGray"
+                   Padding="10"
+                   Margin="0,5"
+                   CornerRadius="8">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{Binding Mokkinimi, StringFormat='Nimi: {0}'}"
+                        FontAttributes="Bold" />
+                    <Label Text="{Binding AreaName, StringFormat='Alue: {0}'}" />
+                    <Label Text="{Binding Katuosoite, StringFormat='Osoite: {0}'}" />
+                    <Label Text="{Binding Hinta, StringFormat='Hinta: {0:F2} €'}" />
+                    <Label Text="{Binding Henkilomaara, StringFormat='Henkilömäärä: {0}'}" />
+                    <Label Text="{Binding Varustelu, StringFormat='Varustelu: {0}'}" />
+
+                    <Button Text="Poista"
+                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCottageCommand}"
+                         CommandParameter="{Binding MokkiId}"
+                         BackgroundColor="#E74C3C"
+                         TextColor="White"
+                         CornerRadius="8"
+                         HeightRequest="40" />
+                </VerticalStackLayout>
+               </Frame>
+              </DataTemplate>
+          </CollectionView.ItemTemplate>
+         </CollectionView>
+
+     </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

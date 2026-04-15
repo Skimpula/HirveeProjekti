@@ -1,3 +1,5 @@
+using HirveeProjekti.ViewModels;
+
 namespace HirveeProjekti.Views
 {
     public partial class CottagesPage : ContentPage
@@ -5,6 +7,7 @@ namespace HirveeProjekti.Views
         public CottagesPage()
         {
             InitializeComponent();
+            BindingContext = new CottageViewModel();
         }
     }
 }
