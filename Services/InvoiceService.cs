@@ -1,7 +1,7 @@
 
 using HirveeProjekti.Models;
 namespace HirveeProjekti.Services
-
+{
     public class InvoiceService
     {
         private readonly List<Invoice> _invoices = new();
@@ -30,14 +30,14 @@ namespace HirveeProjekti.Services
                 .FirstOrDefault(b => b.VarausId == varausId);
 
             if (booking == null)
-                throw new Exception("Varausta ei löytynyt.");
+                throw new Exception("Varausta ei lï¿½ytynyt.");
 
-            // Yöt
+            // Yï¿½t
             int nights = (booking.VarattuLoppuPvm - booking.VarattuAlkuPvm).Days;
             if (nights <= 0)
                 nights = 1;
 
-            // Mökin hinta
+            // Mï¿½kin hinta
             double mokkiSumma = nights * booking.Mokki.Hinta;
 
             // Palveluiden summa
@@ -59,7 +59,7 @@ namespace HirveeProjekti.Services
                 palveluAlv += riviSumma * (palvelu.Vat / 100.0);
             }
 
-            // Oletetaan, että mökin hinta sisältää saman ALV:n (24%)
+            // Oletetaan, ettï¿½ mï¿½kin hinta sisï¿½ltï¿½ï¿½ saman ALV:n (24%)
             double mokkiAlv = mokkiSumma * 0.24;
 
             var invoice = new Invoice
@@ -106,9 +106,9 @@ namespace HirveeProjekti.Services
         {
             var invoice = GetInvoiceById(laskuId);
             if (invoice == null)
-                throw new Exception("Laskua ei löytynyt.");
+                throw new Exception("Laskua ei lï¿½ytynyt.");
 
-            // Tässä vaiheessa vain placeholder-logiikka
+            // Tï¿½ssï¿½ vaiheessa vain placeholder-logiikka
             Console.WriteLine($"Tulostetaan lasku #{invoice.LaskuId}");
         }
 
@@ -116,10 +116,10 @@ namespace HirveeProjekti.Services
         {
             var invoice = GetInvoiceById(laskuId);
             if (invoice == null)
-                throw new Exception("Laskua ei löytynyt.");
+                throw new Exception("Laskua ei lï¿½ytynyt.");
 
             // Placeholder
-            Console.WriteLine($"Lähetetään sähköpostilasku #{invoice.LaskuId}");
+            Console.WriteLine($"Lï¿½hetetï¿½ï¿½n sï¿½hkï¿½postilasku #{invoice.LaskuId}");
         }
     }
 }

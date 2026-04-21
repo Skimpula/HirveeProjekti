@@ -6,6 +6,9 @@ namespace HirveeProjekti.Models
     // palvelu taulu 
     public class Service
     {
+        internal int Price;
+        internal double Vat;
+
         public int PalveluId { get; set; }   
         public int AlueId { get; set; }      
         public string Nimi { get; set; }    
