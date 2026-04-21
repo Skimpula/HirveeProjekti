@@ -68,14 +68,14 @@
 
                                 <Label Text="{Binding VarausId, StringFormat='Varaus #{0}'}"
                                        FontAttributes="Bold"/>
-                                <Label Text="{Binding CustomerName, StringFormat='Asiakas: {0}'}"/>
-                                <Label Text="{Binding CottageName, StringFormat='Mökki: {0}'}"/>
-                                <Label Text="{Binding StartDate, StringFormat='Alku: {0:dd.MM.yyyy}'}"/>
-                                <Label Text="{Binding EndDate, StringFormat='Loppu: {0:dd.MM.yyyy}'}"/>
+                                <Label Text="{Binding Asiakas.FullName, StringFormat='Asiakas: {0}'}"/>
+                                <Label Text="{Binding Mokki.Mokkinimi, StringFormat='Mökki: {0}'}"/>
+                                <Label Text="{Binding VarattuAlkuPvm, StringFormat='Alku: {0:dd.MM.yyyy}'}"/>
+                                <Label Text="{Binding VarattuLoppuPvm, StringFormat='Loppu: {0:dd.MM.yyyy}'}"/>
 
                                 <Button Text="Poista"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteBookingCommand}"
-                                        CommandParameter="{Binding VarausId}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveBookingCommand}"
+                                        CommandParameter="{Binding .}"
                                         BackgroundColor="#F44336"
                                         TextColor="White"
                                         CornerRadius="8"

@@ -32,13 +32,9 @@
                            CornerRadius="10"
                            HasShadow="True">
                         <HorizontalStackLayout Spacing="10">
-                            <Label Text="{Binding Name}"
+                            <Label Text="{Binding Nimi}"
                                    FontSize="18"
                                    FontAttributes="Bold"
-                                   VerticalOptions="Center"/>
-                            <Label Text="{Binding Description}"
-                                   FontSize="14"
-                                   TextColor="#7F8C8D"
                                    VerticalOptions="Center"/>
                             <HorizontalStackLayout HorizontalOptions="EndAndExpand" Spacing="5">
                                 <Button Text="Edit"

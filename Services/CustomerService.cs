@@ -1,38 +1,71 @@
 using System.Collections.Generic;
+using System.Linq;
 using HirveeProjekti.Models;
+using SQLite;
 
 namespace HirveeProjekti.Services
 {
     public class CustomerService
     {
-        // Yksinkertainen lista asiakkaista muistissa
-        private List<Customer> _customers = new List<Customer>();
+        private SQLiteConnection _db;
 
         public CustomerService()
         {
-            // Esimerkkiasiakkaita alustukseksi
-            _customers.Add(new Customer { AsiakasId = 1, Etunimi = "Matti", Sukunimi = "Meikäläinen", Email = "matti@example.com", Puhelinnro = "0401234567" });
-            _customers.Add(new Customer { AsiakasId = 2, Etunimi = "Maija", Sukunimi = "Mallikas", Email = "maija@example.com", Puhelinnro = "0507654321" });
+            var dbPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "vn.db");
+
+            _db = new SQLiteConnection(dbPath);
+            
+            // Initialize database on first use
+            var initializer = new DatabaseInitializer(_db);
+            initializer.Initialize();
         }
 
-        // Hae kaikki asiakkaat
+        // Get all customers from database
         public List<Customer> GetAllCustomers()
         {
-            return _customers;
+            try
+            {
+                _db.CreateTable<Customer>();
+                
+                var customers = _db.Query<Customer>("SELECT * FROM asiakas ORDER BY asiakas_id");
+
+                return customers;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading customers: {ex.Message}");
+                return new List<Customer>();
+            }
         }
 
-        // Lisää asiakas
+        // Add customer to database
         public void AddCustomer(Customer customer)
         {
-            // Annetaan yksinkertainen automaattinen ID
-            customer.AsiakasId = _customers.Count > 0 ? _customers[_customers.Count - 1].AsiakasId + 1 : 1;
-            _customers.Add(customer);
+            try
+            {
+                _db.Insert(customer);
+                System.Diagnostics.Debug.WriteLine("Customer added successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error adding customer: {ex.Message}");
+            }
         }
 
-        // Poista asiakas
+        // Delete customer from database
         public void DeleteCustomer(Customer customer)
         {
-            _customers.Remove(customer);
+            try
+            {
+                _db.Delete(customer);
+                System.Diagnostics.Debug.WriteLine("Customer deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting customer: {ex.Message}");
+            }
         }
     }
 }
