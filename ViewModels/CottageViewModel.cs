@@ -1,13 +1,14 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using HirveeProjekti.Models;
+using HirveeProjekti.Services;
 using Microsoft.Maui.Controls;
 
 namespace HirveeProjekti.ViewModels
 {
     public class CottageViewModel : BindableObject
     {
-        private readonly CottageData _cottageData = new CottageData();
+        private readonly CottageService _cottageService = new CottageService();
 
         public ObservableCollection<Cottage> Cottages { get; } = new();
 
@@ -36,8 +37,8 @@ namespace HirveeProjekti.ViewModels
             set => SetField(ref _newCottageAddress, value);
         }
 
-        private string _newCottageArea = string.Empty;
-        public string NewCottageArea
+        private int _newCottageArea = 1;
+        public int NewCottageArea
         {
             get => _newCottageArea;
             set => SetField(ref _newCottageArea, value);
@@ -85,99 +86,100 @@ namespace HirveeProjekti.ViewModels
         public CottageViewModel()
         {
             AddCottageCommand = new Command(AddCottage);
-            DeleteCottageCommand = new Command<int>(DeleteCottage);
+            DeleteCottageCommand = new Command<Cottage>(DeleteCottage);
 
-            SeedCottages();
             LoadCottages();
-        }
-
-        private void SeedCottages()
-        {
-            if (_cottageData.GetAll().Count > 0)
-            {
-                return;
-            }
-
-            _cottageData.Add(new Cottage
-            {
-                Mokkinimi = "Rantamaja",
-                Katuosoite = "Järventie 12",
-                AreaName = "Ruka",
-                Hinta = 129.00,
-                Henkilomaara = 4,
-                Varustelu = "Sähkö, sauna, wifi"
-            });
-
-            _cottageData.Add(new Cottage
-            {
-                Mokkinimi = "Metsäkumpu",
-                Katuosoite = "Honkatie 8",
-                AreaName = "Tahko",
-                Hinta = 149.00,
-                Henkilomaara = 6,
-                Varustelu = "Takka, vene, grilli"
-            });
         }
 
         private void LoadCottages()
         {
-            Cottages.Clear();
-
-            foreach (var cottage in _cottageData.GetAll())
+            try
             {
-                Cottages.Add(cottage);
+                Cottages.Clear();
+
+                var cottages = _cottageService.GetAllCottages();
+                foreach (var cottage in cottages)
+                {
+                    Cottages.Add(cottage);
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Loaded {Cottages.Count} cottages into ViewModel");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading cottages: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error loading cottages: {ex.Message}");
             }
         }
 
         private void AddCottage()
         {
-            if (string.IsNullOrWhiteSpace(NewCottageName) ||
-                string.IsNullOrWhiteSpace(NewCottageAddress) ||
-                string.IsNullOrWhiteSpace(NewCottagePrice) ||
-                string.IsNullOrWhiteSpace(NewCottageCapacity))
+            try
             {
-                ErrorMessage = "Täytä vähintään nimi, osoite, hinta ja henkilömäärä.";
-                return;
+                if (string.IsNullOrWhiteSpace(NewCottageName) ||
+                    string.IsNullOrWhiteSpace(NewCottageAddress) ||
+                    string.IsNullOrWhiteSpace(NewCottagePrice) ||
+                    string.IsNullOrWhiteSpace(NewCottageCapacity))
+                {
+                    ErrorMessage = "Täytä vähintään nimi, osoite, hinta ja henkilömäärä.";
+                    return;
+                }
+
+                if (!double.TryParse(NewCottagePrice, out var price))
+                {
+                    ErrorMessage = "Hinta pitää olla numero.";
+                    return;
+                }
+
+                if (!int.TryParse(NewCottageCapacity, out var capacity))
+                {
+                    ErrorMessage = "Henkilömäärä pitää olla kokonaisluku.";
+                    return;
+                }
+
+                var cottage = new Cottage
+                {
+                    AlueId = NewCottageArea,
+                    Mokkinimi = NewCottageName.Trim(),
+                    Katuosoite = NewCottageAddress.Trim(),
+                    Hinta = price,
+                    Henkilomaara = capacity,
+                    Varustelu = NewCottageEquipment.Trim()
+                };
+
+                _cottageService.AddCottage(cottage);
+                LoadCottages();
+
+                NewCottageName = string.Empty;
+                NewCottageAddress = string.Empty;
+                NewCottageArea = 1;
+                NewCottagePrice = string.Empty;
+                NewCottageCapacity = string.Empty;
+                NewCottageEquipment = string.Empty;
+                ErrorMessage = string.Empty;
+
+                System.Diagnostics.Debug.WriteLine("Cottage added successfully");
             }
-
-            if (!double.TryParse(NewCottagePrice, out var price))
+            catch (Exception ex)
             {
-                ErrorMessage = "Hinta pitää olla numero.";
-                return;
+                ErrorMessage = $"Error adding cottage: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error adding cottage: {ex.Message}");
             }
-
-            if (!int.TryParse(NewCottageCapacity, out var capacity))
-            {
-                ErrorMessage = "Henkilömäärä pitää olla kokonaisluku.";
-                return;
-            }
-
-            var cottage = new Cottage
-            {
-                Mokkinimi = NewCottageName.Trim(),
-                Katuosoite = NewCottageAddress.Trim(),
-                AreaName = NewCottageArea.Trim(),
-                Hinta = price,
-                Henkilomaara = capacity,
-                Varustelu = NewCottageEquipment.Trim()
-            };
-
-            _cottageData.Add(cottage);
-            LoadCottages();
-
-            NewCottageName = string.Empty;
-            NewCottageAddress = string.Empty;
-            NewCottageArea = string.Empty;
-            NewCottagePrice = string.Empty;
-            NewCottageCapacity = string.Empty;
-            NewCottageEquipment = string.Empty;
-            ErrorMessage = string.Empty;
         }
 
-        private void DeleteCottage(int id)
+        private void DeleteCottage(Cottage cottage)
         {
-            _cottageData.Delete(id);
-            LoadCottages();
+            try
+            {
+                _cottageService.DeleteCottage(cottage);
+                LoadCottages();
+                System.Diagnostics.Debug.WriteLine("Cottage deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error deleting cottage: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error deleting cottage: {ex.Message}");
+            }
         }
 
         private bool SetField<T>(ref T field, T value)
@@ -190,6 +192,12 @@ namespace HirveeProjekti.ViewModels
             field = value;
             OnPropertyChanged();
             return true;
+        }
+
+        public void RefreshCottages()
+        {
+            LoadCottages();
+            System.Diagnostics.Debug.WriteLine($"Cottages refreshed - Total: {Cottages.Count}");
         }
     }
 }

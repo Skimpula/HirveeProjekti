@@ -8,6 +8,7 @@ namespace HirveeProjekti.Services
     public class CustomerService
     {
         private SQLiteConnection _db;
+        private static bool _initialized = false;
 
         public CustomerService()
         {
@@ -17,9 +18,13 @@ namespace HirveeProjekti.Services
 
             _db = new SQLiteConnection(dbPath);
             
-            // Initialize database on first use
-            var initializer = new DatabaseInitializer(_db);
-            initializer.Initialize();
+            // Initialize database only once
+            if (!_initialized)
+            {
+                var initializer = new DatabaseInitializer(_db);
+                initializer.Initialize();
+                _initialized = true;
+            }
         }
 
         // Get all customers from database
@@ -27,10 +32,8 @@ namespace HirveeProjekti.Services
         {
             try
             {
-                _db.CreateTable<Customer>();
-                
-                var customers = _db.Query<Customer>("SELECT * FROM asiakas ORDER BY asiakas_id");
-
+                var customers = _db.Table<Customer>().ToList();
+                System.Diagnostics.Debug.WriteLine($"Loaded {customers.Count} customers from database");
                 return customers;
             }
             catch (Exception ex)

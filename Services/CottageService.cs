@@ -8,6 +8,7 @@ namespace HirveeProjekti.Services
     public class CottageService
     {
         private SQLiteConnection _db;
+        private static bool _initialized = false;
 
         public CottageService()
         {
@@ -17,9 +18,13 @@ namespace HirveeProjekti.Services
 
             _db = new SQLiteConnection(dbPath);
             
-            // Initialize database on first use
-            var initializer = new DatabaseInitializer(_db);
-            initializer.Initialize();
+            // Initialize database only once
+            if (!_initialized)
+            {
+                var initializer = new DatabaseInitializer(_db);
+                initializer.Initialize();
+                _initialized = true;
+            }
         }
 
         // Get all cottages from database with area information
@@ -27,10 +32,8 @@ namespace HirveeProjekti.Services
         {
             try
             {
-                _db.CreateTable<Cottage>();
-                
-                var cottages = _db.Query<Cottage>("SELECT * FROM mokki ORDER BY mokki_id");
-
+                var cottages = _db.Table<Cottage>().ToList();
+                System.Diagnostics.Debug.WriteLine($"Loaded {cottages.Count} cottages from database");
                 return cottages;
             }
             catch (Exception ex)

@@ -8,6 +8,7 @@ namespace HirveeProjekti.Services
     public class AreaService
     {
         private SQLiteConnection _db;
+        private static bool _initialized = false;
 
         public AreaService()
         {
@@ -17,9 +18,14 @@ namespace HirveeProjekti.Services
 
             _db = new SQLiteConnection(dbPath);
             
-            // Initialize database on first use
-            var initializer = new DatabaseInitializer(_db);
-            initializer.Initialize();
+            // Initialize database only once
+            if (!_initialized)
+            {
+                var initializer = new DatabaseInitializer(_db);
+                initializer.Initialize();
+                _initialized = true;
+                System.Diagnostics.Debug.WriteLine($"Database initialized at: {dbPath}");
+            }
         }
 
         // Get all areas from database
@@ -27,10 +33,8 @@ namespace HirveeProjekti.Services
         {
             try
             {
-                _db.CreateTable<Area>();
-                
-                var areas = _db.Query<Area>("SELECT * FROM alue ORDER BY alue_id");
-
+                var areas = _db.Table<Area>().ToList();
+                System.Diagnostics.Debug.WriteLine($"Loaded {areas.Count} areas from database");
                 return areas;
             }
             catch (Exception ex)

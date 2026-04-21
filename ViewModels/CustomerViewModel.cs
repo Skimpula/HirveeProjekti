@@ -15,53 +15,89 @@ namespace HirveeProjekti.ViewModels
         public ObservableCollection<Customer> Customers { get; set; } = new ObservableCollection<Customer>();
 
         // Lomakkeen kentät
-        private string _etunimi;
-        public string Etunimi
+        private string _newCustomerFirstName = string.Empty;
+        public string NewCustomerFirstName
         {
-            get => _etunimi;
+            get => _newCustomerFirstName;
             set
             {
-                _etunimi = value;
+                _newCustomerFirstName = value;
                 OnPropertyChanged();
             }
         }
 
-        private string _sukunimi;
-        public string Sukunimi
+        private string _newCustomerLastName = string.Empty;
+        public string NewCustomerLastName
         {
-            get => _sukunimi;
+            get => _newCustomerLastName;
             set
             {
-                _sukunimi = value;
+                _newCustomerLastName = value;
                 OnPropertyChanged();
             }
         }
 
-        private string _email;
-        public string Email
+        private string _newCustomerAddress = string.Empty;
+        public string NewCustomerAddress
         {
-            get => _email;
+            get => _newCustomerAddress;
             set
             {
-                _email = value;
+                _newCustomerAddress = value;
                 OnPropertyChanged();
             }
         }
 
-        private string _puhelinnro;
-        public string Puhelinnro
+        private string _newCustomerPostalCode = string.Empty;
+        public string NewCustomerPostalCode
         {
-            get => _puhelinnro;
+            get => _newCustomerPostalCode;
             set
             {
-                _puhelinnro = value;
+                _newCustomerPostalCode = value;
                 OnPropertyChanged();
             }
         }
+
+        private string _newCustomerEmail = string.Empty;
+        public string NewCustomerEmail
+        {
+            get => _newCustomerEmail;
+            set
+            {
+                _newCustomerEmail = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _newCustomerPhone = string.Empty;
+        public string NewCustomerPhone
+        {
+            get => _newCustomerPhone;
+            set
+            {
+                _newCustomerPhone = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _errorMessage = string.Empty;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
+        }
+
+        public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
         // Komennot
         public ICommand AddCustomerCommand { get; }
-        public ICommand RemoveCustomerCommand { get; }
+        public ICommand DeleteCustomerCommand { get; }
 
         private Customer _selectedCustomer;
         public Customer SelectedCustomer
@@ -76,51 +112,98 @@ namespace HirveeProjekti.ViewModels
 
         public CustomerViewModel()
         {
-            _customerService = new CustomerService(); // Oletetaan valmis palvelu
+            _customerService = new CustomerService();
 
             // Lataa asiakkaat palvelusta
             LoadCustomers();
 
             AddCustomerCommand = new Command(AddCustomer);
-            RemoveCustomerCommand = new Command<Customer>(RemoveCustomer);
+            DeleteCustomerCommand = new Command<Customer>(DeleteCustomer);
         }
 
         private void LoadCustomers()
         {
-            var list = _customerService.GetAllCustomers(); // Palauttaa List<Customer>
-            Customers.Clear();
-            foreach (var c in list)
+            try
             {
-                Customers.Add(c);
+                var list = _customerService.GetAllCustomers();
+                Customers.Clear();
+                foreach (var c in list)
+                {
+                    Customers.Add(c);
+                }
+                System.Diagnostics.Debug.WriteLine($"Loaded {Customers.Count} customers");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading customers: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error loading customers: {ex.Message}");
             }
         }
 
         private void AddCustomer()
         {
-            if (string.IsNullOrWhiteSpace(Etunimi) || string.IsNullOrWhiteSpace(Sukunimi))
-                return;
-
-            var newCustomer = new Customer
+            try
             {
-                Etunimi = Etunimi,
-                Sukunimi = Sukunimi,
-                Email = Email,
-                Puhelinnro = Puhelinnro
-            };
+                ErrorMessage = string.Empty;
 
-            _customerService.AddCustomer(newCustomer);
-            Customers.Add(newCustomer);
+                if (string.IsNullOrWhiteSpace(NewCustomerFirstName) || string.IsNullOrWhiteSpace(NewCustomerLastName))
+                {
+                    ErrorMessage = "Etunimi ja sukunimi ovat pakollisia.";
+                    return;
+                }
 
-            // Tyhjennä lomake
-            Etunimi = Sukunimi = Email = Puhelinnro = string.Empty;
+                var newCustomer = new Customer
+                {
+                    Etunimi = NewCustomerFirstName.Trim(),
+                    Sukunimi = NewCustomerLastName.Trim(),
+                    Lahiosoite = NewCustomerAddress?.Trim() ?? "",
+                    Postinro = NewCustomerPostalCode?.Trim() ?? "00000",
+                    Email = NewCustomerEmail?.Trim() ?? "",
+                    Puhelinnro = NewCustomerPhone?.Trim() ?? ""
+                };
+
+                _customerService.AddCustomer(newCustomer);
+                LoadCustomers();
+
+                // Tyhjennä lomake
+                NewCustomerFirstName = string.Empty;
+                NewCustomerLastName = string.Empty;
+                NewCustomerAddress = string.Empty;
+                NewCustomerPostalCode = string.Empty;
+                NewCustomerEmail = string.Empty;
+                NewCustomerPhone = string.Empty;
+
+                System.Diagnostics.Debug.WriteLine("Customer added successfully");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error adding customer: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error adding customer: {ex.Message}");
+            }
         }
 
-        private void RemoveCustomer(Customer customer)
+        private void DeleteCustomer(Customer customer)
         {
-            if (customer == null) return;
+            try
+            {
+                if (customer == null) return;
 
-            _customerService.DeleteCustomer(customer);
-            Customers.Remove(customer);
+                _customerService.DeleteCustomer(customer);
+                LoadCustomers();
+
+                System.Diagnostics.Debug.WriteLine("Customer deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error deleting customer: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error deleting customer: {ex.Message}");
+            }
+        }
+
+        public void RefreshCustomers()
+        {
+            LoadCustomers();
+            System.Diagnostics.Debug.WriteLine($"Customers refreshed - Total: {Customers.Count}");
         }
     }
 }

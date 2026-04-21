@@ -160,15 +160,18 @@ namespace HirveeProjekti.ViewModels
 
             var newBooking = new Booking
             {
-                Asiakas = SelectedCustomer,
-                Mokki = SelectedCottage,
+                AsiakasId = SelectedCustomer.AsiakasId,
+                MokkiId = SelectedCottage.MokkiId,
                 VarattuAlkuPvm = StartDate,
                 VarattuLoppuPvm = EndDate,
-                VarattuPvm = DateTime.Now
+                VarattuPvm = DateTime.Now,
+                VahvistusPvm = DateTime.Now,
+                Asiakas = SelectedCustomer,
+                Mokki = SelectedCottage
             };
 
             _bookingService.AddBooking(newBooking);
-            Bookings.Add(newBooking);
+            LoadBookings();
 
             // Reset form
             SelectedCustomer = null;
@@ -195,6 +198,14 @@ namespace HirveeProjekti.ViewModels
         {
             ErrorMessage = string.Empty;
             HasError = false;
+        }
+
+        public void RefreshBookings()
+        {
+            LoadCustomers();
+            LoadCottages();
+            LoadBookings();
+            System.Diagnostics.Debug.WriteLine($"Bookings refreshed - Total: {Bookings.Count}");
         }
     }
 }

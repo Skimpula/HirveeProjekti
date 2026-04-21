@@ -18,6 +18,13 @@ namespace HirveeProjekti.Views
             AreasCollectionView.ItemsSource = Areas;
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            // Reload areas when page appears
+            LoadAreas();
+        }
+
         private void LoadAreas()
         {
             try

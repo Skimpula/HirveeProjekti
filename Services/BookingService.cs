@@ -10,6 +10,7 @@ namespace HirveeProjekti.Services
         private SQLiteConnection _db;
         private CustomerService _customerService;
         private CottageService _cottageService;
+        private static bool _initialized = false;
 
         public BookingService()
         {
@@ -19,9 +20,13 @@ namespace HirveeProjekti.Services
 
             _db = new SQLiteConnection(dbPath);
             
-            // Initialize database on first use
-            var initializer = new DatabaseInitializer(_db);
-            initializer.Initialize();
+            // Initialize database only once
+            if (!_initialized)
+            {
+                var initializer = new DatabaseInitializer(_db);
+                initializer.Initialize();
+                _initialized = true;
+            }
             
             _customerService = new CustomerService();
             _cottageService = new CottageService();
@@ -32,9 +37,8 @@ namespace HirveeProjekti.Services
         {
             try
             {
-                _db.CreateTable<Booking>();
-                
-                var bookings = _db.Query<Booking>("SELECT * FROM varaus ORDER BY varaus_id");
+                var bookings = _db.Table<Booking>().ToList();
+                System.Diagnostics.Debug.WriteLine($"Loaded {bookings.Count} bookings from database");
 
                 // Load related customer and cottage data
                 foreach (var booking in bookings)

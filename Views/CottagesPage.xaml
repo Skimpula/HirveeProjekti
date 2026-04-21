@@ -23,7 +23,8 @@
 
          <Entry Placeholder="Mökin nimi"
              Text="{Binding NewCottageName}" />
-         <Entry Placeholder="Alue"
+         <Entry Placeholder="Alue ID (1-5)"
+             Keyboard="Numeric"
              Text="{Binding NewCottageArea}" />
          <Entry Placeholder="Osoite"
              Text="{Binding NewCottageAddress}" />
@@ -70,7 +71,7 @@
 
                     <Button Text="Poista"
                          Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCottageCommand}"
-                         CommandParameter="{Binding MokkiId}"
+                         CommandParameter="{Binding .}"
                          BackgroundColor="#E74C3C"
                          TextColor="White"
                          CornerRadius="8"
