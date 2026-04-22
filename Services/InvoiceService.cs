@@ -54,9 +54,9 @@ namespace HirveeProjekti.Services
                 if (palvelu == null)
                     continue;
 
-                var riviSumma = item.Lkm * palvelu.Price;
+                var riviSumma = item.Lkm * palvelu.Hinta;
                 palveluSumma += riviSumma;
-                palveluAlv += riviSumma * (palvelu.Vat / 100.0);
+                palveluAlv += riviSumma * (palvelu.Alv / 100.0);
             }
 
             // Oletetaan, ett� m�kin hinta sis�lt�� saman ALV:n (24%)

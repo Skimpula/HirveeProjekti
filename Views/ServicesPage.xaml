@@ -55,18 +55,17 @@
                         <Frame BorderColor="LightGray"
                                Padding="10"
                                Margin="0,5"
-                               CornerRadius="5">
-                            <VerticalStackLayout Spacing="5">
-
-                                <Label Text="{Binding Nimi, StringFormat='Palvelu: {0}'}"
+                               CornerRadius="8">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Nimi, StringFormat='Nimi: {0}'}"
                                        FontAttributes="Bold"/>
                                 <Label Text="{Binding Kuvaus, StringFormat='Kuvaus: {0}'}"/>
-                                <Label Text="{Binding Hinta, StringFormat='Hinta: {0:C}'}"/>
-                                <Label Text="{Binding Alv, StringFormat='ALV: {0:C}'}"/>
+                                <Label Text="{Binding Hinta, StringFormat='Hinta: {0:F2} €'}"/>
+                                <Label Text="{Binding Alv, StringFormat='ALV: {0:F2}%'}"/>
 
                                 <Button Text="Poista"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteServiceCommand}"
-                                        CommandParameter="{Binding PalveluId}"
+                                        CommandParameter="{Binding .}"
                                         BackgroundColor="#F44336"
                                         TextColor="White"
                                         CornerRadius="8"

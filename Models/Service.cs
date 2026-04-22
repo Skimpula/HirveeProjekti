@@ -1,19 +1,27 @@
-using System.Collections.Generic;
-using HirveeProjekti.Models;
+using SQLite;
 
 namespace HirveeProjekti.Models
 {
-    // palvelu taulu 
+    [Table("palvelu")]
     public class Service
     {
-        internal int Price;
-        internal double Vat;
+        [PrimaryKey, AutoIncrement]
+        [Column("palvelu_id")]
+        public int PalveluId { get; set; }
 
-        public int PalveluId { get; set; }   
-        public int AlueId { get; set; }      
-        public string Nimi { get; set; }    
-        public string Kuvaus { get; set; } 
-        public double Hinta { get; set; }    
-        public double Lkm { get; set; }      
+        [Column("alue_id")]
+        public int AlueId { get; set; }
+
+        [Column("nimi")]
+        public string? Nimi { get; set; }
+
+        [Column("kuvaus")]
+        public string? Kuvaus { get; set; }
+
+        [Column("hinta")]
+        public double Hinta { get; set; }
+
+        [Column("alv")]
+        public double Alv { get; set; }
     }
 }

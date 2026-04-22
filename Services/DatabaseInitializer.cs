@@ -21,6 +21,8 @@ namespace HirveeProjekti.Services
                 _db.CreateTable<Cottage>();
                 _db.CreateTable<Customer>();
                 _db.CreateTable<Booking>();
+                _db.CreateTable<Service>();
+                _db.CreateTable<Invoice>();
 
                 System.Diagnostics.Debug.WriteLine("All tables created successfully");
 
@@ -87,6 +89,41 @@ namespace HirveeProjekti.Services
                 };
                 _db.InsertAll(cottages);
                 System.Diagnostics.Debug.WriteLine($"Inserted {cottages.Count} cottages");
+
+                // Insert Services
+                var services = new List<Service>
+                {
+                    new Service { AlueId = 1, Nimi = "Koirasledit", Kuvaus = "Opastetut koirasleliajeluut Lapin lumilla", Hinta = 75.00, Alv = 24.0 },
+                    new Service { AlueId = 1, Nimi = "Poronhoito", Kuvaus = "Poron ohjaus ja koulutus", Hinta = 85.00, Alv = 24.0 },
+                    new Service { AlueId = 2, Nimi = "Kalastus", Kuvaus = "Ohjattu kalastus Pielisessä", Hinta = 60.00, Alv = 24.0 },
+                    new Service { AlueId = 2, Nimi = "Sauna & Spa", Kuvaus = "Perinteinen sauna ja hieronta", Hinta = 50.00, Alv = 24.0 },
+                    new Service { AlueId = 3, Nimi = "Saaristoristeilyt", Kuvaus = "Veneilyt Turun saaristossa", Hinta = 65.00, Alv = 24.0 },
+                    new Service { AlueId = 4, Nimi = "Kaupunkikierros", Kuvaus = "Helsingin nähtävyyksien kierros", Hinta = 45.00, Alv = 24.0 },
+                    new Service { AlueId = 5, Nimi = "Pyöräilyreitit", Kuvaus = "Ohjatut pyöräilyreitit Pohjanmaalla", Hinta = 40.00, Alv = 24.0 }
+                };
+                _db.InsertAll(services);
+                System.Diagnostics.Debug.WriteLine($"Inserted {services.Count} services");
+
+                // Insert Bookings
+                var today = DateTime.Now;
+                var bookings = new List<Booking>
+                {
+                    new Booking { AsiakasId = 1, MokkiId = 1, VarattuPvm = today, VahvistusPvm = today, VarattuAlkuPvm = today.AddDays(10), VarattuLoppuPvm = today.AddDays(17) },
+                    new Booking { AsiakasId = 2, MokkiId = 3, VarattuPvm = today, VahvistusPvm = today, VarattuAlkuPvm = today.AddDays(15), VarattuLoppuPvm = today.AddDays(22) },
+                    new Booking { AsiakasId = 3, MokkiId = 5, VarattuPvm = today, VahvistusPvm = today, VarattuAlkuPvm = today.AddDays(5), VarattuLoppuPvm = today.AddDays(12) }
+                };
+                _db.InsertAll(bookings);
+                System.Diagnostics.Debug.WriteLine($"Inserted {bookings.Count} bookings");
+
+                // Insert Invoices
+                var invoices = new List<Invoice>
+                {
+                    new Invoice { VarausId = 1, Summa = 1500.00, Alv = 360.00, Maksettu = false },
+                    new Invoice { VarausId = 2, Summa = 1200.00, Alv = 288.00, Maksettu = true },
+                    new Invoice { VarausId = 3, Summa = 900.00, Alv = 216.00, Maksettu = false }
+                };
+                _db.InsertAll(invoices);
+                System.Diagnostics.Debug.WriteLine($"Inserted {invoices.Count} invoices");
 
                 System.Diagnostics.Debug.WriteLine("Sample data inserted successfully");
             }
