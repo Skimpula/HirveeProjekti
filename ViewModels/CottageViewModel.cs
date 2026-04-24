@@ -9,8 +9,10 @@ namespace HirveeProjekti.ViewModels
     public class CottageViewModel : BindableObject
     {
         private readonly CottageService _cottageService = new CottageService();
+        private readonly AreaService _areaService = new AreaService();
 
         public ObservableCollection<Cottage> Cottages { get; } = new();
+        public ObservableCollection<Area> Areas { get; } = new();
 
         private Cottage? _selectedCottage;
         public Cottage? SelectedCottage
@@ -20,6 +22,21 @@ namespace HirveeProjekti.ViewModels
             {
                 _selectedCottage = value;
                 OnPropertyChanged();
+            }
+        }
+
+        private Area? _selectedArea;
+        public Area? SelectedArea
+        {
+            get => _selectedArea;
+            set
+            {
+                _selectedArea = value;
+                OnPropertyChanged();
+                if (value != null)
+                {
+                    NewCottageArea = value.AlueId;
+                }
             }
         }
 
@@ -88,7 +105,33 @@ namespace HirveeProjekti.ViewModels
             AddCottageCommand = new Command(AddCottage);
             DeleteCottageCommand = new Command<Cottage>(DeleteCottage);
 
+            LoadAreas();
             LoadCottages();
+        }
+
+        private void LoadAreas()
+        {
+            try
+            {
+                Areas.Clear();
+                var areas = _areaService.GetAllAreas();
+                foreach (var area in areas)
+                {
+                    Areas.Add(area);
+                }
+                
+                // Set default selected area to first one
+                if (Areas.Count > 0)
+                {
+                    SelectedArea = Areas[0];
+                }
+                
+                System.Diagnostics.Debug.WriteLine($"Loaded {Areas.Count} areas into ViewModel");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading areas: {ex.Message}");
+            }
         }
 
         private void LoadCottages()

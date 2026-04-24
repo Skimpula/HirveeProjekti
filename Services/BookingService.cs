@@ -85,5 +85,19 @@ namespace HirveeProjekti.Services
                 System.Diagnostics.Debug.WriteLine($"Error deleting booking: {ex.Message}");
             }
         }
+
+        // Update booking in database
+        public void UpdateBooking(Booking booking)
+        {
+            try
+            {
+                _db.Update(booking);
+                System.Diagnostics.Debug.WriteLine("Booking updated successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating booking: {ex.Message}");
+            }
+        }
     }
 }

@@ -44,12 +44,20 @@
                    IsVisible="{Binding HasError}" />
 
             <!-- ➕ Lisää varaus -->
-            <Button Text="Tee varaus"
+            <Button Text="{Binding AddButtonText}"
                     Command="{Binding AddBookingCommand}"
                     BackgroundColor="#4CAF50"
                     TextColor="White"
                     CornerRadius="8"
                     HeightRequest="50" />
+
+            <Button Text="Peruuta muokkaus"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelEditCommand}"
+                    BackgroundColor="#9E9E9E"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="40"
+                    IsVisible="{Binding IsEditMode}" />
 
             <!-- 📋 Lista varauksista -->
             <Label Text="Nykyiset varaukset"
@@ -73,13 +81,23 @@
                                 <Label Text="{Binding VarattuAlkuPvm, StringFormat='Alku: {0:dd.MM.yyyy}'}"/>
                                 <Label Text="{Binding VarattuLoppuPvm, StringFormat='Loppu: {0:dd.MM.yyyy}'}"/>
 
-                                <Button Text="Poista"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveBookingCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="#F44336"
-                                        TextColor="White"
-                                        CornerRadius="8"
-                                        HeightRequest="40"/>
+                                <HorizontalStackLayout Spacing="10">
+                                    <Button Text="Muokkaa"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditBookingCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#2196F3"
+                                            TextColor="White"
+                                            CornerRadius="8"
+                                            HeightRequest="40"/>
+
+                                    <Button Text="Poista"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveBookingCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#F44336"
+                                            TextColor="White"
+                                            CornerRadius="8"
+                                            HeightRequest="40"/>
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>

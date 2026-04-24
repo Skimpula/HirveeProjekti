@@ -23,9 +23,12 @@
 
          <Entry Placeholder="Mökin nimi"
              Text="{Binding NewCottageName}" />
-         <Entry Placeholder="Alue ID (1-5)"
-             Keyboard="Numeric"
-             Text="{Binding NewCottageArea}" />
+         
+         <Picker Title="Valitse alue"
+             ItemsSource="{Binding Areas}"
+             ItemDisplayBinding="{Binding Nimi}"
+             SelectedItem="{Binding SelectedArea}" />
+         
          <Entry Placeholder="Osoite"
              Text="{Binding NewCottageAddress}" />
          <Entry Placeholder="Hinta"
