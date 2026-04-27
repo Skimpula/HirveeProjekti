@@ -13,6 +13,26 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
 
+             <Label Text="Luo lasku varauksesta"
+                 FontSize="18"
+                 FontAttributes="Bold"/>
+
+             <Picker Title="Valitse varaus"
+                  ItemsSource="{Binding AvailableBookings}"
+                  ItemDisplayBinding="{Binding InvoiceCreationDisplay}"
+                  SelectedItem="{Binding SelectedBookingForInvoice}" />
+
+             <Button Text="Luo lasku (mökin hinta × päivien määrä)"
+                  Command="{Binding CreateInvoiceFromBookingCommand}"
+                  BackgroundColor="#1976D2"
+                  TextColor="White"
+                  CornerRadius="8"
+                  HeightRequest="45" />
+
+             <Label Text="{Binding InvoiceActionMessage}"
+                 TextColor="#1B5E20"
+                 IsVisible="{Binding HasInvoiceActionMessage}" />
+
             <!-- 📋 Lista laskuista -->
             <Label Text="Kaikki laskut"
                    FontSize="18"
@@ -43,12 +63,12 @@
                                        FontAttributes="Bold"/>
                                 <Label Text="{Binding Alv, StringFormat='ALV: {0:F2} €'}"
                                        TextColor="Black"/>
-                                <Label Text="{Binding Maksettu, StringFormat='Maksettu: {0}'}"
+                                    <Label Text="{Binding TilaTeksti, StringFormat='Tila: {0}'}"
                                        TextColor="Black"/>
 
                                 <HorizontalStackLayout Spacing="10">
-                                    <Button Text="Merkitse maksetuksi"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.MarkPaidCommand}"
+                                     <Button Text="Vaihda maksun tila"
+                                          Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TogglePaymentStatusCommand}"
                                             CommandParameter="{Binding LaskuId}"
                                             BackgroundColor="#4CAF50"
                                             TextColor="White"

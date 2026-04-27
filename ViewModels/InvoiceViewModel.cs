@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using HirveeProjekti.Models;
 using HirveeProjekti.Services;
@@ -17,9 +18,35 @@ namespace HirveeProjekti.ViewModels
         private readonly CustomerService _customerService;
 
         public ObservableCollection<Invoice> Invoices { get; set; } = new();
+        public ObservableCollection<Booking> AvailableBookings { get; set; } = new();
 
-        private Invoice _selectedInvoice;
-        public Invoice SelectedInvoice
+        private Booking? _selectedBookingForInvoice;
+        public Booking? SelectedBookingForInvoice
+        {
+            get => _selectedBookingForInvoice;
+            set
+            {
+                _selectedBookingForInvoice = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _invoiceActionMessage = string.Empty;
+        public string InvoiceActionMessage
+        {
+            get => _invoiceActionMessage;
+            set
+            {
+                _invoiceActionMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasInvoiceActionMessage));
+            }
+        }
+
+        public bool HasInvoiceActionMessage => !string.IsNullOrWhiteSpace(InvoiceActionMessage);
+
+        private Invoice? _selectedInvoice;
+        public Invoice? SelectedInvoice
         {
             get => _selectedInvoice;
             set
@@ -49,8 +76,9 @@ namespace HirveeProjekti.ViewModels
         }
 
         public ICommand SelectInvoiceCommand { get; }
-        public ICommand MarkPaidCommand { get; }
+        public ICommand TogglePaymentStatusCommand { get; }
         public ICommand SendReminderCommand { get; }
+        public ICommand CreateInvoiceFromBookingCommand { get; }
 
         public InvoiceViewModel()
         {
@@ -69,11 +97,13 @@ namespace HirveeProjekti.ViewModels
             _cottageService = new CottageService();
             _customerService = new CustomerService();
 
-            SelectInvoiceCommand = new Command<Invoice>(SelectInvoice);
-            MarkPaidCommand = new Command<int>(MarkInvoiceAsPaid);
+            SelectInvoiceCommand = new Command<Invoice?>(SelectInvoice);
+            TogglePaymentStatusCommand = new Command<int>(ToggleInvoicePaymentStatus);
             SendReminderCommand = new Command<int>(SendReminder);
+            CreateInvoiceFromBookingCommand = new Command(CreateInvoiceFromBooking);
 
             LoadInvoices();
+            LoadAvailableBookings();
         }
 
         private void LoadInvoices()
@@ -101,9 +131,95 @@ namespace HirveeProjekti.ViewModels
             }
         }
 
-        private void SelectInvoice(Invoice invoice)
+        private void SelectInvoice(Invoice? invoice)
         {
             SelectedInvoice = invoice;
+        }
+
+        private void LoadAvailableBookings()
+        {
+            try
+            {
+                AvailableBookings.Clear();
+
+                var invoicedBookingIds = _db.Table<Invoice>()
+                    .Select(i => i.VarausId)
+                    .ToHashSet();
+
+                var bookings = _bookingService.GetAllBookings()
+                    .Where(b => !invoicedBookingIds.Contains(b.VarausId))
+                    .OrderBy(b => b.VarattuAlkuPvm)
+                    .ToList();
+
+                foreach (var booking in bookings)
+                {
+                    AvailableBookings.Add(booking);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading available bookings: {ex.Message}");
+            }
+        }
+
+        private void CreateInvoiceFromBooking()
+        {
+            try
+            {
+                if (SelectedBookingForInvoice == null)
+                {
+                    InvoiceActionMessage = "Valitse varaus ennen laskun luontia.";
+                    return;
+                }
+
+                bool invoiceExists = _db.Table<Invoice>()
+                    .Any(i => i.VarausId == SelectedBookingForInvoice.VarausId);
+
+                if (invoiceExists)
+                {
+                    InvoiceActionMessage = "Valitulle varaukselle on jo olemassa lasku.";
+                    LoadAvailableBookings();
+                    return;
+                }
+
+                int dayCount = (SelectedBookingForInvoice.VarattuLoppuPvm - SelectedBookingForInvoice.VarattuAlkuPvm).Days;
+                if (dayCount <= 0)
+                {
+                    dayCount = 1;
+                }
+
+                var cottage = SelectedBookingForInvoice.Mokki
+                    ?? _cottageService.GetAllCottages().FirstOrDefault(c => c.MokkiId == SelectedBookingForInvoice.MokkiId);
+
+                if (cottage == null)
+                {
+                    InvoiceActionMessage = "Varauksen mökin tietoja ei löytynyt.";
+                    return;
+                }
+
+                var total = cottage.Hinta * dayCount;
+                var vat = total * 0.24;
+
+                var invoice = new Invoice
+                {
+                    VarausId = SelectedBookingForInvoice.VarausId,
+                    Summa = total,
+                    Alv = vat,
+                    Maksettu = false
+                };
+
+                _db.Insert(invoice);
+                InvoiceActionMessage = $"Lasku luotu varauksesta #{SelectedBookingForInvoice.VarausId}: {total:F2} EUR.";
+
+                SelectedBookingForInvoice = null;
+                LoadInvoices();
+                LoadAvailableBookings();
+            }
+            catch (Exception ex)
+            {
+                InvoiceActionMessage = $"Laskun luonti epäonnistui: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error creating invoice: {ex.Message}");
+            }
         }
 
         private void LoadSelectedInvoiceDetails()
@@ -154,27 +270,30 @@ namespace HirveeProjekti.ViewModels
             }
         }
 
-        private void MarkInvoiceAsPaid(int laskuId)
+        private void ToggleInvoicePaymentStatus(int laskuId)
         {
             try
             {
                 var invoice = Invoices.FirstOrDefault(i => i.LaskuId == laskuId);
                 if (invoice != null)
                 {
-                    invoice.Maksettu = true;
+                    invoice.Maksettu = !invoice.Maksettu;
                     _db.Update(invoice);
-                    System.Diagnostics.Debug.WriteLine($"Invoice {laskuId} marked as paid");
-                    
-                    // Refresh details if this was the selected invoice
-                    if (SelectedInvoice?.LaskuId == laskuId)
+
+                    var statusText = invoice.Maksettu ? "Maksettu" : "Maksamatta";
+                    InvoiceActionMessage = $"Laskun #{invoice.LaskuId} tila päivitetty: {statusText}.";
+
+                    int? selectedInvoiceId = SelectedInvoice?.LaskuId;
+                    LoadInvoices();
+                    if (selectedInvoiceId.HasValue)
                     {
-                        LoadSelectedInvoiceDetails();
+                        SelectedInvoice = Invoices.FirstOrDefault(i => i.LaskuId == selectedInvoiceId.Value);
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error marking invoice as paid: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error toggling payment status: {ex.Message}");
             }
         }
 
@@ -198,6 +317,7 @@ namespace HirveeProjekti.ViewModels
         public void RefreshInvoices()
         {
             LoadInvoices();
+            LoadAvailableBookings();
             System.Diagnostics.Debug.WriteLine($"Invoices refreshed - Total: {Invoices.Count}");
         }
     }

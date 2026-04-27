@@ -21,5 +21,8 @@ namespace HirveeProjekti.Models
         
         [Column("maksettu")]
         public bool Maksettu { get; set; }
+
+        [Ignore]
+        public string TilaTeksti => Maksettu ? "Maksettu" : "Maksamatta";
     }
 }

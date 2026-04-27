@@ -33,5 +33,15 @@ namespace HirveeProjekti.Models
 
         [Ignore]
         public Cottage? Mokki { get; set; }
+
+        [Ignore]
+        public string InvoiceCreationDisplay
+        {
+            get
+            {
+                var cottageName = Mokki?.Mokkinimi ?? $"Mokki #{MokkiId}";
+                return $"Varaus #{VarausId}: {cottageName} ({VarattuAlkuPvm:dd.MM.yyyy} - {VarattuLoppuPvm:dd.MM.yyyy})";
+            }
+        }
     }
 }
