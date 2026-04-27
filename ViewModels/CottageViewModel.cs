@@ -52,6 +52,7 @@ namespace HirveeProjekti.ViewModels
             {
                 _selectedSearchArea = value;
                 OnPropertyChanged();
+                SearchAvailableCottages();
             }
         }
 
@@ -59,14 +60,26 @@ namespace HirveeProjekti.ViewModels
         public DateTime SearchStartDate
         {
             get => _searchStartDate;
-            set => SetField(ref _searchStartDate, value);
+            set
+            {
+                if (SetField(ref _searchStartDate, value))
+                {
+                    SearchAvailableCottages();
+                }
+            }
         }
 
         private DateTime _searchEndDate = DateTime.Today.AddDays(1);
         public DateTime SearchEndDate
         {
             get => _searchEndDate;
-            set => SetField(ref _searchEndDate, value);
+            set
+            {
+                if (SetField(ref _searchEndDate, value))
+                {
+                    SearchAvailableCottages();
+                }
+            }
         }
 
         private string _newCottageName = string.Empty;
@@ -256,8 +269,8 @@ namespace HirveeProjekti.ViewModels
                 }
 
                 SearchMessage = freeCottages.Count == 0
-                    ? "Yhtään vapaata mökkiä ei löytynyt valitulla haulla."
-                    : $"Löytyi {freeCottages.Count} vapaata mökkiä.";
+                    ? $"Yhtään vapaata mökkiä ei löytynyt ajalle {start:dd.MM.yyyy} - {end:dd.MM.yyyy}."
+                    : $"Löytyi {freeCottages.Count} vapaata mökkiä ajalle {start:dd.MM.yyyy} - {end:dd.MM.yyyy}.";
             }
             catch (Exception ex)
             {
