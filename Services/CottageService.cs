@@ -8,6 +8,7 @@ namespace HirveeProjekti.Services
     public class CottageService
     {
         private SQLiteConnection _db;
+        private readonly AreaService _areaService = new AreaService();
         private static bool _initialized = false;
 
         public CottageService()
@@ -33,6 +34,13 @@ namespace HirveeProjekti.Services
             try
             {
                 var cottages = _db.Table<Cottage>().ToList();
+                var areas = _areaService.GetAllAreas();
+
+                foreach (var cottage in cottages)
+                {
+                    cottage.AreaName = areas.FirstOrDefault(a => a.AlueId == cottage.AlueId)?.Nimi ?? "Tuntematon";
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Loaded {cottages.Count} cottages from database");
                 return cottages;
             }

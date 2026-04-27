@@ -51,6 +51,54 @@
              TextColor="Red"
              IsVisible="{Binding HasError}" />
 
+         <BoxView HeightRequest="1"
+                  Color="#DADADA"
+                  Margin="0,10" />
+
+         <Label Text="Vapaat mökit"
+             FontSize="20"
+             FontAttributes="Bold" />
+
+         <Picker Title="Valitse alue"
+             ItemsSource="{Binding SearchAreas}"
+             ItemDisplayBinding="{Binding Nimi}"
+             SelectedItem="{Binding SelectedSearchArea}" />
+
+         <DatePicker Date="{Binding SearchStartDate}" />
+         <DatePicker Date="{Binding SearchEndDate}" />
+
+         <Button Text="Hae vapaat mökit"
+              Command="{Binding SearchAvailableCottagesCommand}"
+              BackgroundColor="#1976D2"
+              TextColor="White"
+              CornerRadius="10"
+              HeightRequest="48" />
+
+         <Label Text="{Binding SearchMessage}"
+             TextColor="#1B5E20"
+             IsVisible="{Binding HasSearchMessage}" />
+
+         <CollectionView ItemsSource="{Binding AvailableCottages}">
+          <CollectionView.ItemTemplate>
+              <DataTemplate>
+               <Frame BorderColor="LightGray"
+                   Padding="10"
+                   Margin="0,5"
+                   CornerRadius="8">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{Binding Mokkinimi, StringFormat='Nimi: {0}'}"
+                        FontAttributes="Bold" />
+                    <Label Text="{Binding AreaName, StringFormat='Alue: {0}'}" />
+                    <Label Text="{Binding Katuosoite, StringFormat='Osoite: {0}'}" />
+                    <Label Text="{Binding Hinta, StringFormat='Hinta: {0:F2} €/yö'}" />
+                    <Label Text="{Binding Henkilomaara, StringFormat='Henkilömäärä: {0}'}" />
+                    <Label Text="{Binding Varustelu, StringFormat='Varustelu: {0}'}" />
+                </VerticalStackLayout>
+               </Frame>
+              </DataTemplate>
+          </CollectionView.ItemTemplate>
+         </CollectionView>
+
          <Label Text="Nykyiset mökit"
              FontSize="20"
              FontAttributes="Bold"

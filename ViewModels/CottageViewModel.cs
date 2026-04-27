@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using HirveeProjekti.Models;
 using HirveeProjekti.Services;
@@ -10,9 +11,12 @@ namespace HirveeProjekti.ViewModels
     {
         private readonly CottageService _cottageService = new CottageService();
         private readonly AreaService _areaService = new AreaService();
+        private readonly BookingService _bookingService = new BookingService();
 
         public ObservableCollection<Cottage> Cottages { get; } = new();
         public ObservableCollection<Area> Areas { get; } = new();
+        public ObservableCollection<Area> SearchAreas { get; } = new();
+        public ObservableCollection<Cottage> AvailableCottages { get; } = new();
 
         private Cottage? _selectedCottage;
         public Cottage? SelectedCottage
@@ -38,6 +42,31 @@ namespace HirveeProjekti.ViewModels
                     NewCottageArea = value.AlueId;
                 }
             }
+        }
+
+        private Area? _selectedSearchArea;
+        public Area? SelectedSearchArea
+        {
+            get => _selectedSearchArea;
+            set
+            {
+                _selectedSearchArea = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime _searchStartDate = DateTime.Today;
+        public DateTime SearchStartDate
+        {
+            get => _searchStartDate;
+            set => SetField(ref _searchStartDate, value);
+        }
+
+        private DateTime _searchEndDate = DateTime.Today.AddDays(1);
+        public DateTime SearchEndDate
+        {
+            get => _searchEndDate;
+            set => SetField(ref _searchEndDate, value);
         }
 
         private string _newCottageName = string.Empty;
@@ -97,16 +126,35 @@ namespace HirveeProjekti.ViewModels
 
         public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
+        private string _searchMessage = string.Empty;
+        public string SearchMessage
+        {
+            get => _searchMessage;
+            set
+            {
+                if (SetField(ref _searchMessage, value))
+                {
+                    OnPropertyChanged(nameof(HasSearchMessage));
+                }
+            }
+        }
+
+        public bool HasSearchMessage => !string.IsNullOrWhiteSpace(SearchMessage);
+
         public ICommand AddCottageCommand { get; }
         public ICommand DeleteCottageCommand { get; }
+        public ICommand SearchAvailableCottagesCommand { get; }
 
         public CottageViewModel()
         {
             AddCottageCommand = new Command(AddCottage);
             DeleteCottageCommand = new Command<Cottage>(DeleteCottage);
+            SearchAvailableCottagesCommand = new Command(SearchAvailableCottages);
 
             LoadAreas();
             LoadCottages();
+            LoadSearchAreas();
+            SearchAvailableCottages();
         }
 
         private void LoadAreas()
@@ -134,6 +182,19 @@ namespace HirveeProjekti.ViewModels
             }
         }
 
+        private void LoadSearchAreas()
+        {
+            SearchAreas.Clear();
+            SearchAreas.Add(new Area { AlueId = 0, Nimi = "Kaikki alueet" });
+
+            foreach (var area in Areas)
+            {
+                SearchAreas.Add(area);
+            }
+
+            SelectedSearchArea = SearchAreas.FirstOrDefault();
+        }
+
         private void LoadCottages()
         {
             try
@@ -152,6 +213,56 @@ namespace HirveeProjekti.ViewModels
             {
                 ErrorMessage = $"Error loading cottages: {ex.Message}";
                 System.Diagnostics.Debug.WriteLine($"Error loading cottages: {ex.Message}");
+            }
+        }
+
+        private void SearchAvailableCottages()
+        {
+            try
+            {
+                SearchMessage = string.Empty;
+
+                var start = SearchStartDate.Date;
+                var end = SearchEndDate.Date;
+
+                if (end <= start)
+                {
+                    SearchMessage = "Loppupäivän pitää olla alkupäivän jälkeen.";
+                    AvailableCottages.Clear();
+                    return;
+                }
+
+                var cottages = _cottageService.GetAllCottages();
+                var bookings = _bookingService.GetAllBookings();
+
+                if (SelectedSearchArea != null && SelectedSearchArea.AlueId > 0)
+                {
+                    cottages = cottages.Where(c => c.AlueId == SelectedSearchArea.AlueId).ToList();
+                }
+
+                var freeCottages = cottages
+                    .Where(cottage => !bookings.Any(booking =>
+                        booking.MokkiId == cottage.MokkiId &&
+                        start < booking.VarattuLoppuPvm.Date &&
+                        end > booking.VarattuAlkuPvm.Date))
+                    .OrderBy(c => c.AreaName)
+                    .ThenBy(c => c.Mokkinimi)
+                    .ToList();
+
+                AvailableCottages.Clear();
+                foreach (var cottage in freeCottages)
+                {
+                    AvailableCottages.Add(cottage);
+                }
+
+                SearchMessage = freeCottages.Count == 0
+                    ? "Yhtään vapaata mökkiä ei löytynyt valitulla haulla."
+                    : $"Löytyi {freeCottages.Count} vapaata mökkiä.";
+            }
+            catch (Exception ex)
+            {
+                SearchMessage = $"Vapaiden mökkien haku epäonnistui: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error searching available cottages: {ex.Message}");
             }
         }
 
@@ -239,7 +350,10 @@ namespace HirveeProjekti.ViewModels
 
         public void RefreshCottages()
         {
+            LoadAreas();
             LoadCottages();
+            LoadSearchAreas();
+            SearchAvailableCottages();
             System.Diagnostics.Debug.WriteLine($"Cottages refreshed - Total: {Cottages.Count}");
         }
     }
