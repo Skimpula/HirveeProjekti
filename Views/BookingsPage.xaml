@@ -59,6 +59,32 @@
                     HeightRequest="40"
                     IsVisible="{Binding IsEditMode}" />
 
+            <!-- 📅 Varauskalenteri -->
+            <Label Text="Varauskalenteri (mökki/päivä)"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0"/>
+
+            <ScrollView Orientation="Both" HeightRequest="300">
+                <Grid x:Name="CalendarGrid"
+                      ColumnSpacing="2" RowSpacing="2"
+                      Padding="5">
+                    <!-- Calendar will be generated in code-behind or via ViewModel -->
+                    <Grid.BindingContext>
+                        <Binding Path="CalendarViewModel" />
+                    </Grid.BindingContext>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" /> <!-- Header row for dates -->
+                        <RowDefinition Height="*" /> <!-- Cottage rows (will be generated) -->
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" /> <!-- Cottage name column -->
+                        <ColumnDefinition Width="*" /> <!-- Date columns (will be generated) -->
+                    </Grid.ColumnDefinitions>
+                    <!-- The actual cells will be generated in code-behind or with a custom control -->
+                </Grid>
+            </ScrollView>
+
             <!-- 📋 Lista varauksista -->
             <Label Text="Nykyiset varaukset"
                    FontSize="20"

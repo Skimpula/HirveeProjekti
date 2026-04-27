@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using HirveeProjekti.Models;
 using HirveeProjekti.Services;
@@ -14,6 +13,21 @@ namespace HirveeProjekti.ViewModels
 
         // Lista asiakkaista
         public ObservableCollection<Customer> Customers { get; set; } = new ObservableCollection<Customer>();
+        private List<Customer> _allCustomers = new List<Customer>();
+
+        private string _searchText = string.Empty;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                SearchCustomers();
+            }
+        }
+
+        public ICommand SearchCommand { get; }
 
         // Lomakkeen kentät
         private string _newCustomerFirstName = string.Empty;
@@ -111,6 +125,7 @@ namespace HirveeProjekti.ViewModels
             }
         }
 
+
         public CustomerViewModel()
         {
             _customerService = new CustomerService();
@@ -120,6 +135,7 @@ namespace HirveeProjekti.ViewModels
 
             AddCustomerCommand = new Command(AddCustomer);
             DeleteCustomerCommand = new Command<Customer>(DeleteCustomer);
+            SearchCommand = new Command(SearchCustomers);
         }
 
         private void LoadCustomers()
@@ -127,17 +143,30 @@ namespace HirveeProjekti.ViewModels
             try
             {
                 var list = _customerService.GetAllCustomers();
-                Customers.Clear();
-                foreach (var c in list)
-                {
-                    Customers.Add(c);
-                }
+                _allCustomers = list;
+                SearchCustomers();
                 System.Diagnostics.Debug.WriteLine($"Loaded {Customers.Count} customers");
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Error loading customers: {ex.Message}";
                 System.Diagnostics.Debug.WriteLine($"Error loading customers: {ex.Message}");
+            }
+        }
+
+        private void SearchCustomers()
+        {
+            Customers.Clear();
+            var filtered = string.IsNullOrWhiteSpace(SearchText)
+                ? _allCustomers
+                : _allCustomers.Where(c =>
+                    (!string.IsNullOrEmpty(c.Etunimi) && c.Etunimi.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                      (!string.IsNullOrEmpty(c.Sukunimi) && c.Sukunimi.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                      (!string.IsNullOrEmpty(c.FullName) && c.FullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                  ).ToList();
+            foreach (var c in filtered)
+            {
+                Customers.Add(c);
             }
         }
 

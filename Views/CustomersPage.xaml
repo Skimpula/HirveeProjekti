@@ -47,11 +47,14 @@
                    TextColor="Red"
                    IsVisible="{Binding HasError}" />
 
-            <!-- 📋 Lista asiakkaista -->
+            <!-- 🔍 Haku -->
             <Label Text="Nykyiset asiakkaat"
                    FontSize="20"
                    FontAttributes="Bold"
                    Margin="0,20,0,0"/>
+
+            <Entry Placeholder="Etsi asiakasta nimellä..."
+                   Text="{Binding SearchText}" />
 
             <CollectionView ItemsSource="{Binding Customers}">
                 <CollectionView.ItemTemplate>

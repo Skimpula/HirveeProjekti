@@ -1,6 +1,8 @@
+using System.Collections.ObjectModel;     
 using HirveeProjekti.Models;
 using HirveeProjekti.Services;
 using System;
+using HirveeProjekti.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -10,6 +12,39 @@ namespace HirveeProjekti.ViewModels
 {
     public class BookingViewModel : BindableObject
     {
+          public ObservableCollection<DateTime> CalendarDates { get; set; } = new ObservableCollection<DateTime>();
+            public ObservableCollection<Cottage> CalendarCottages { get; set; } = new ObservableCollection<Cottage>();
+            // Dictionary: [date][cottageId] = Booking or null
+            public Dictionary<DateTime, Dictionary<int, Booking?>> CalendarBookings { get; set; } = new Dictionary<DateTime, Dictionary<int, Booking?>>();
+
+        // Call this to refresh the calendar data
+        public void RefreshCalendar(DateTime? start = null, DateTime? end = null)
+        {
+            // Show 14 days by default
+            DateTime from = start ?? DateTime.Today;
+            DateTime to = end ?? DateTime.Today.AddDays(13);
+            CalendarDates.Clear();
+            for (var d = from; d <= to; d = d.AddDays(1))
+                CalendarDates.Add(d);
+
+            CalendarCottages.Clear();
+            foreach (var c in Cottages)
+                CalendarCottages.Add(c);
+
+            CalendarBookings.Clear();
+            foreach (var date in CalendarDates)
+            {
+                CalendarBookings[date] = new Dictionary<int, Booking?>();
+                foreach (var cottage in CalendarCottages)
+                {
+                    var booking = Bookings.FirstOrDefault(b => b.MokkiId == cottage.MokkiId && date >= b.VarattuAlkuPvm && date < b.VarattuLoppuPvm);
+                    CalendarBookings[date][cottage.MokkiId] = booking;
+                }
+            }
+            OnPropertyChanged(nameof(CalendarDates));
+            OnPropertyChanged(nameof(CalendarCottages));
+            OnPropertyChanged(nameof(CalendarBookings));
+        }
         private readonly BookingService _bookingService;
         private readonly CustomerService _customerService;
         private readonly CottageService _cottageService;
@@ -164,6 +199,7 @@ namespace HirveeProjekti.ViewModels
             {
                 Bookings.Add(booking);
             }
+            RefreshCalendar();
         }
 
         private bool HasBookingConflict(int mokkiId, DateTime startDate, DateTime endDate)
