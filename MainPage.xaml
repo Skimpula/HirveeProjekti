@@ -31,7 +31,7 @@
 
                 <!-- Manage Areas -->
                 <Button Grid.Row="0" Grid.Column="0"
-                        Text="Areas"
+                        Text="Alueet"
                         FontSize="16"
                         BackgroundColor="#3498DB"
                         TextColor="White"
@@ -40,7 +40,7 @@
 
                 <!-- Manage Cottages -->
                 <Button Grid.Row="0" Grid.Column="1"
-                        Text="Cottages"
+                        Text="Mökit"
                         FontSize="16"
                         BackgroundColor="#2ECC71"
                         TextColor="White"
@@ -49,7 +49,7 @@
 
                 <!-- Manage Customers -->
                 <Button Grid.Row="1" Grid.Column="0"
-                        Text="Customers"
+                        Text="Asiakkaat"
                         FontSize="16"
                         BackgroundColor="#E67E22"
                         TextColor="White"
@@ -58,7 +58,7 @@
 
                 <!-- Manage Bookings -->
                 <Button Grid.Row="1" Grid.Column="1"
-                        Text="Bookings"
+                        Text="Varaukset"
                         FontSize="16"
                         BackgroundColor="#9B59B6"
                         TextColor="White"
@@ -67,7 +67,7 @@
 
                 <!-- Manage Services -->
                 <Button Grid.Row="2" Grid.Column="0"
-                        Text="Services"
+                        Text="Palvelut"
                         FontSize="16"
                         BackgroundColor="#1ABC9C"
                         TextColor="White"
@@ -76,7 +76,7 @@
 
                 <!-- Manage Invoices -->
                 <Button Grid.Row="2" Grid.Column="1"
-                        Text="Invoices"
+                        Text="Laskut"
                         FontSize="16"
                         BackgroundColor="#E74C3C"
                         TextColor="White"

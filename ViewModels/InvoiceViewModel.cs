@@ -1,3 +1,4 @@
+       
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,6 +12,26 @@ namespace HirveeProjekti.ViewModels
 {
     public class InvoiceViewModel : BindableObject
     {
+         public enum InvoiceFilterType { All, Paid, Unpaid }
+        private InvoiceFilterType _invoiceFilter = InvoiceFilterType.All;
+        public InvoiceFilterType InvoiceFilter
+        {
+            get => _invoiceFilter;
+            set
+            {
+                if (_invoiceFilter != value)
+                {
+                    _invoiceFilter = value;
+                    OnPropertyChanged();
+                    UpdateFilteredInvoices();
+                }
+            }
+        }
+        public ICommand SetInvoiceFilterCommand { get; }
+        public ObservableCollection<Invoice> FilteredInvoices { get; set; } = new();
+
+        public ICommand PrintInvoiceToPdfCommand { get; }
+         public bool IsInvoiceSelected => SelectedInvoice != null;
         private readonly SQLiteConnection _db;
         private readonly BookingService _bookingService;
         private readonly ServiceService _serviceService;
@@ -98,12 +119,15 @@ namespace HirveeProjekti.ViewModels
             _customerService = new CustomerService();
 
             SelectInvoiceCommand = new Command<Invoice?>(SelectInvoice);
+            PrintInvoiceToPdfCommand = new Command(PrintInvoiceToPdf, () => IsInvoiceSelected);
             TogglePaymentStatusCommand = new Command<int>(ToggleInvoicePaymentStatus);
             SendReminderCommand = new Command<int>(SendReminder);
             CreateInvoiceFromBookingCommand = new Command(CreateInvoiceFromBooking);
 
+            SetInvoiceFilterCommand = new Command<string>(SetInvoiceFilter);
             LoadInvoices();
             LoadAvailableBookings();
+            UpdateFilteredInvoices();
         }
 
         private void LoadInvoices()
@@ -112,17 +136,15 @@ namespace HirveeProjekti.ViewModels
             {
                 Invoices.Clear();
                 System.Diagnostics.Debug.WriteLine("Starting to load invoices...");
-                
                 var invoices = _db.Table<Invoice>().ToList();
                 System.Diagnostics.Debug.WriteLine($"Query returned {invoices.Count} invoices from database");
-                
                 foreach (var invoice in invoices)
                 {
                     Invoices.Add(invoice);
                     System.Diagnostics.Debug.WriteLine($"Added invoice: ID={invoice.LaskuId}, VarausId={invoice.VarausId}, Summa={invoice.Summa}");
                 }
-
                 System.Diagnostics.Debug.WriteLine($"Loaded {Invoices.Count} invoices total");
+                UpdateFilteredInvoices();
             }
             catch (Exception ex)
             {
@@ -131,9 +153,67 @@ namespace HirveeProjekti.ViewModels
             }
         }
 
+        private void SetInvoiceFilter(string filter)
+        {
+            if (Enum.TryParse<InvoiceFilterType>(filter, out var parsed))
+            {
+                InvoiceFilter = parsed;
+            }
+        }
+
+        private void UpdateFilteredInvoices()
+        {
+            FilteredInvoices.Clear();
+            IEnumerable<Invoice> filtered = Invoices;
+            switch (InvoiceFilter)
+            {
+                case InvoiceFilterType.Paid:
+                    filtered = Invoices.Where(i => i.Maksettu);
+                    break;
+                case InvoiceFilterType.Unpaid:
+                    filtered = Invoices.Where(i => !i.Maksettu);
+                    break;
+                case InvoiceFilterType.All:
+                default:
+                    break;
+            }
+            foreach (var invoice in filtered)
+                FilteredInvoices.Add(invoice);
+            OnPropertyChanged(nameof(FilteredInvoices));
+        }
+
         private void SelectInvoice(Invoice? invoice)
         {
             SelectedInvoice = invoice;
+            OnPropertyChanged(nameof(IsInvoiceSelected));
+            (PrintInvoiceToPdfCommand as Command)?.ChangeCanExecute();
+        }
+
+        private void PrintInvoiceToPdf()
+        {
+            if (SelectedInvoice == null)
+                return;
+
+            try
+            {
+                // Always reload details to ensure up-to-date content
+                LoadSelectedInvoiceDetails();
+                var details = SelectedInvoiceDetails;
+                if (string.IsNullOrWhiteSpace(details))
+                {
+                    details = $"Lasku ID: {SelectedInvoice.LaskuId}\nVaraus ID: {SelectedInvoice.VarausId}\nEi tietoja.";
+                }
+                var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var fileName = $"Invoice_{SelectedInvoice.LaskuId}.pdf";
+                var filePath = Path.Combine(folder, fileName);
+                System.IO.File.WriteAllText(filePath, details);
+                InvoiceActionMessage = $"Lasku tallennettu PDF-tiedostoon: {filePath}";
+                OnPropertyChanged(nameof(InvoiceActionMessage));
+            }
+            catch (Exception ex)
+            {
+                InvoiceActionMessage = $"Virhe PDF:n luonnissa: {ex.Message}";
+            }
         }
 
         private void LoadAvailableBookings()
