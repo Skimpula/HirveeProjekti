@@ -1,3 +1,8 @@
+            
+    using QuestPDF.Fluent;
+    using QuestPDF.Helpers;
+    using QuestPDF.Infrastructure;
+    using QuestPDF.Drawing;
        
 using System;
 using System.Collections.ObjectModel;
@@ -27,6 +32,10 @@ namespace HirveeProjekti.ViewModels
                 }
             }
         }
+        static InvoiceViewModel()
+            {
+                QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            }
         public ICommand SetInvoiceFilterCommand { get; }
         public ObservableCollection<Invoice> FilteredInvoices { get; set; } = new();
 
@@ -198,15 +207,49 @@ namespace HirveeProjekti.ViewModels
             {
                 // Always reload details to ensure up-to-date content
                 LoadSelectedInvoiceDetails();
-                var details = SelectedInvoiceDetails;
-                if (string.IsNullOrWhiteSpace(details))
-                {
-                    details = $"Lasku ID: {SelectedInvoice.LaskuId}\nVaraus ID: {SelectedInvoice.VarausId}\nEi tietoja.";
-                }
+
                 var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 var fileName = $"Invoice_{SelectedInvoice.LaskuId}.pdf";
                 var filePath = Path.Combine(folder, fileName);
-                System.IO.File.WriteAllText(filePath, details);
+
+                // Get booking details for PDF
+                var booking = _bookingService.GetAllBookings().FirstOrDefault(b => b.VarausId == SelectedInvoice.VarausId);
+
+                QuestPDF.Fluent.Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(2, Unit.Centimetre);
+                        page.DefaultTextStyle(x => x.FontSize(14));
+
+                        page.Header().Text($"Lasku ID: {SelectedInvoice.LaskuId}").SemiBold().FontSize(20);
+                        page.Content().Column(col =>
+                        {
+                            col.Spacing(10);
+                            col.Item().Text($"Varaus ID: {SelectedInvoice.VarausId}");
+                            if (booking != null)
+                            {
+                                col.Item().Text("Varauksen tiedot:").Bold();
+                                col.Item().Text($"- Asiakas: {booking.Asiakas?.FullName ?? "Tuntematon"}");
+                                col.Item().Text($"- Mökki: {booking.Mokki?.Mokkinimi ?? "Tuntematon"}");
+                                col.Item().Text($"- Alkupäivä: {booking.VarattuAlkuPvm:dd.MM.yyyy}");
+                                col.Item().Text($"- Loppupäivä: {booking.VarattuLoppuPvm:dd.MM.yyyy}");
+                                int nights = (booking.VarattuLoppuPvm - booking.VarattuAlkuPvm).Days;
+                                if (nights <= 0) nights = 1;
+                                col.Item().Text($"- Yöt: {nights}");
+                                col.Item().Text($"- Mökin hinta/yö: {booking.Mokki?.Hinta:F2} €");
+                            }
+                            col.Item().Text("");
+                            col.Item().Text("Laskun tiedot:").Bold();
+                            col.Item().Text($"- Yhteensä: {SelectedInvoice.Summa:F2} €");
+                            col.Item().Text($"- ALV: {SelectedInvoice.Alv:F2} €");
+                            col.Item().Text($"- Maksettu: {(SelectedInvoice.Maksettu ? "Kyllä" : "Ei")}");
+                        });
+                    });
+                })
+                .GeneratePdf(filePath);
+
                 InvoiceActionMessage = $"Lasku tallennettu PDF-tiedostoon: {filePath}";
                 OnPropertyChanged(nameof(InvoiceActionMessage));
             }
