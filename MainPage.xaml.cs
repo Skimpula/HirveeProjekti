@@ -40,5 +40,10 @@ namespace HirveeProjekti
         {
             await Navigation.PushAsync(new InvoicesPage());
         }
+
+        private async void GoToReports(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new BookingReportsPage());
+        }
     }
 }

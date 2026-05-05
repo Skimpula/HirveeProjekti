@@ -3,136 +3,191 @@
           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
           xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
           x:Class="HirveeProjekti.Views.CottagesPage"
-          Title="Mökit">
+          Title="Mökit"
+          BackgroundColor="#F5F5F5">
 
     <ContentPage.BindingContext>
-     <vm:CottageViewModel />
+        <vm:CottageViewModel />
     </ContentPage.BindingContext>
 
     <ScrollView>
-     <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Padding="16" Spacing="0">
 
-         <Label Text="Mökkien hallinta"
-             FontSize="28"
-             FontAttributes="Bold"
-             HorizontalOptions="Center" />
+            <!-- Lisää uusi mökki -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
-         <Label Text="Lisää uusi mökki"
-             FontSize="18"
-             FontAttributes="Bold" />
+                    <Label Text="🏡 Lisää uusi mökki"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-         <Entry Placeholder="Mökin nimi"
-             Text="{Binding NewCottageName}" />
-         
-         <Picker Title="Valitse alue"
-             ItemsSource="{Binding Areas}"
-             ItemDisplayBinding="{Binding Nimi}"
-             SelectedItem="{Binding SelectedArea}" />
-         
-         <Entry Placeholder="Osoite"
-             Text="{Binding NewCottageAddress}" />
-         <Entry Placeholder="Hinta"
-             Keyboard="Numeric"
-             Text="{Binding NewCottagePrice}" />
-         <Entry Placeholder="Henkilömäärä"
-             Keyboard="Numeric"
-             Text="{Binding NewCottageCapacity}" />
-         <Entry Placeholder="Varustelu"
-             Text="{Binding NewCottageEquipment}" />
+                    <Label Text="Mökin nimi" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Mökin nimi"
+                           Text="{Binding NewCottageName}"
+                           BackgroundColor="#EDE7F6" />
 
-         <Button Text="Lisää mökki"
-              Command="{Binding AddCottageCommand}"
-              BackgroundColor="#2ECC71"
-              TextColor="White"
-              CornerRadius="10"
-              HeightRequest="48" />
+                    <Label Text="Alue" FontSize="13" TextColor="#757575" />
+                    <Picker Title="Valitse alue"
+                            ItemsSource="{Binding Areas}"
+                            ItemDisplayBinding="{Binding Nimi}"
+                            SelectedItem="{Binding SelectedArea}"
+                            BackgroundColor="#EDE7F6" />
 
-         <Label Text="{Binding ErrorMessage}"
-             TextColor="Red"
-             IsVisible="{Binding HasError}" />
+                    <Label Text="Osoite" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Osoite"
+                           Text="{Binding NewCottageAddress}"
+                           BackgroundColor="#EDE7F6" />
 
-         <BoxView HeightRequest="1"
-                  Color="#DADADA"
-                  Margin="0,10" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Hinta (€/yö)" FontSize="13" TextColor="#757575" />
+                            <Entry Placeholder="Hinta"
+                                   Keyboard="Numeric"
+                                   Text="{Binding NewCottagePrice}"
+                                   BackgroundColor="#EDE7F6" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Henkilömäärä" FontSize="13" TextColor="#757575" />
+                            <Entry Placeholder="Henkilömäärä"
+                                   Keyboard="Numeric"
+                                   Text="{Binding NewCottageCapacity}"
+                                   BackgroundColor="#EDE7F6" />
+                        </VerticalStackLayout>
+                    </Grid>
 
-         <Label Text="Vapaat mökit"
-             FontSize="20"
-             FontAttributes="Bold" />
+                    <Label Text="Varustelu" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Varustelu"
+                           Text="{Binding NewCottageEquipment}"
+                           BackgroundColor="#EDE7F6" />
 
-         <Picker Title="Valitse alue"
-             ItemsSource="{Binding SearchAreas}"
-             ItemDisplayBinding="{Binding Nimi}"
-             SelectedItem="{Binding SelectedSearchArea}" />
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="#C62828" FontSize="13"
+                           IsVisible="{Binding HasError}" />
 
-         <DatePicker Date="{Binding SearchStartDate}" />
-         <DatePicker Date="{Binding SearchEndDate}" />
+                    <Button Text="➕ Lisää mökki"
+                            Command="{Binding AddCottageCommand}"
+                            BackgroundColor="#3949AB" TextColor="White"
+                            CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
 
-         <Button Text="Hae vapaat mökit"
-              Command="{Binding SearchAvailableCottagesCommand}"
-              BackgroundColor="#1976D2"
-              TextColor="White"
-              CornerRadius="10"
-              HeightRequest="48" />
-
-         <Label Text="{Binding SearchMessage}"
-             TextColor="#1B5E20"
-             IsVisible="{Binding HasSearchMessage}" />
-
-         <CollectionView ItemsSource="{Binding AvailableCottages}">
-          <CollectionView.ItemTemplate>
-              <DataTemplate>
-               <Frame BorderColor="LightGray"
-                   Padding="10"
-                   Margin="0,5"
-                   CornerRadius="8">
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="{Binding Mokkinimi, StringFormat='Nimi: {0}'}"
-                        FontAttributes="Bold" />
-                    <Label Text="{Binding AreaName, StringFormat='Alue: {0}'}" />
-                    <Label Text="{Binding Katuosoite, StringFormat='Osoite: {0}'}" />
-                    <Label Text="{Binding Hinta, StringFormat='Hinta: {0:F2} €/yö'}" />
-                    <Label Text="{Binding Henkilomaara, StringFormat='Henkilömäärä: {0}'}" />
-                    <Label Text="{Binding Varustelu, StringFormat='Varustelu: {0}'}" />
                 </VerticalStackLayout>
-               </Frame>
-              </DataTemplate>
-          </CollectionView.ItemTemplate>
-         </CollectionView>
+            </Frame>
 
-         <Label Text="Nykyiset mökit"
-             FontSize="20"
-             FontAttributes="Bold"
-             Margin="0,15,0,0" />
+            <!-- Hae vapaita mökkejä -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
-         <CollectionView ItemsSource="{Binding Cottages}">
-          <CollectionView.ItemTemplate>
-              <DataTemplate>
-               <Frame BorderColor="LightGray"
-                   Padding="10"
-                   Margin="0,5"
-                   CornerRadius="8">
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="{Binding Mokkinimi, StringFormat='Nimi: {0}'}"
-                        FontAttributes="Bold" />
-                    <Label Text="{Binding AreaName, StringFormat='Alue: {0}'}" />
-                    <Label Text="{Binding Katuosoite, StringFormat='Osoite: {0}'}" />
-                    <Label Text="{Binding Hinta, StringFormat='Hinta: {0:F2} €'}" />
-                    <Label Text="{Binding Henkilomaara, StringFormat='Henkilömäärä: {0}'}" />
-                    <Label Text="{Binding Varustelu, StringFormat='Varustelu: {0}'}" />
+                    <Label Text="🔍 Hae vapaita mökkejä"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1B5E20" />
+                    <BoxView HeightRequest="1" Color="#C8E6C9" Margin="0,0,0,4" />
 
-                    <Button Text="Poista"
-                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCottageCommand}"
-                         CommandParameter="{Binding .}"
-                         BackgroundColor="#E74C3C"
-                         TextColor="White"
-                         CornerRadius="8"
-                         HeightRequest="40" />
+                    <Label Text="Alue" FontSize="13" TextColor="#757575" />
+                    <Picker Title="Valitse alue"
+                            ItemsSource="{Binding SearchAreas}"
+                            ItemDisplayBinding="{Binding Nimi}"
+                            SelectedItem="{Binding SelectedSearchArea}"
+                            BackgroundColor="#E8F5E9" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Alkaen" FontSize="13" TextColor="#757575" />
+                            <DatePicker Date="{Binding SearchStartDate}" Format="dd.MM.yyyy" BackgroundColor="#E8F5E9" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Päättyen" FontSize="13" TextColor="#757575" />
+                            <DatePicker Date="{Binding SearchEndDate}" Format="dd.MM.yyyy" BackgroundColor="#E8F5E9" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="🔍 Hae vapaat mökit"
+                            Command="{Binding SearchAvailableCottagesCommand}"
+                            BackgroundColor="#388E3C" TextColor="White"
+                            CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
+
+                    <Label Text="{Binding SearchMessage}"
+                           TextColor="#1B5E20" FontSize="13" FontAttributes="Bold"
+                           IsVisible="{Binding HasSearchMessage}"
+                           HorizontalOptions="Center" />
+
+                    <CollectionView ItemsSource="{Binding AvailableCottages}"
+                                    EmptyView="Ei vapaita mökkejä valitulla aikavälillä.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="#F1F8E9" BorderColor="#A5D6A7"
+                                       CornerRadius="8" Padding="12" Margin="0,4">
+                                    <Grid ColumnDefinitions="4,*" ColumnSpacing="10">
+                                        <BoxView Grid.Column="0" BackgroundColor="#388E3C" CornerRadius="2" />
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                            <Label Text="{Binding Mokkinimi}"
+                                                   FontAttributes="Bold" FontSize="15" TextColor="#1B5E20" />
+                                            <Label Text="{Binding AreaName, StringFormat='📍 {0}'}"
+                                                   FontSize="13" TextColor="#37474F" />
+                                            <Label Text="{Binding Katuosoite, StringFormat='🏠 {0}'}"
+                                                   FontSize="13" TextColor="#37474F" />
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Label Text="{Binding Hinta, StringFormat='💰 {0:F2} €/yö'}"
+                                                       FontSize="12" TextColor="#546E7A" />
+                                                <Label Text="{Binding Henkilomaara, StringFormat='👥 {0} hlö'}"
+                                                       FontSize="12" TextColor="#546E7A" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding Varustelu, StringFormat='⚙️ {0}'}"
+                                                   FontSize="12" TextColor="#546E7A" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
                 </VerticalStackLayout>
-               </Frame>
-              </DataTemplate>
-          </CollectionView.ItemTemplate>
-         </CollectionView>
+            </Frame>
 
-     </VerticalStackLayout>
+            <!-- Nykyiset mökit -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,24" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="🏘️ Nykyiset mökit"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
+
+                    <CollectionView ItemsSource="{Binding Cottages}"
+                                    EmptyView="Ei mökkejä.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="#FAFAFA" BorderColor="#C5CAE9"
+                                       CornerRadius="8" Padding="12" Margin="0,4">
+                                    <Grid ColumnDefinitions="4,*" ColumnSpacing="10">
+                                        <BoxView Grid.Column="0" BackgroundColor="#3949AB" CornerRadius="2" />
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                            <Label Text="{Binding Mokkinimi}"
+                                                   FontAttributes="Bold" FontSize="15" TextColor="#1A237E" />
+                                            <Label Text="{Binding AreaName, StringFormat='📍 {0}'}"
+                                                   FontSize="13" TextColor="#37474F" />
+                                            <Label Text="{Binding Katuosoite, StringFormat='🏠 {0}'}"
+                                                   FontSize="13" TextColor="#37474F" />
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Label Text="{Binding Hinta, StringFormat='💰 {0:F2} €'}"
+                                                       FontSize="12" TextColor="#546E7A" />
+                                                <Label Text="{Binding Henkilomaara, StringFormat='👥 {0} hlö'}"
+                                                       FontSize="12" TextColor="#546E7A" />
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding Varustelu, StringFormat='⚙️ {0}'}"
+                                                   FontSize="12" TextColor="#546E7A" />
+                                            <Button Text="🗑️ Poista"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCottageCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#E53935" TextColor="White"
+                                                    CornerRadius="8" HeightRequest="38" FontSize="13"
+                                                    HorizontalOptions="Start" Margin="0,4,0,0"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

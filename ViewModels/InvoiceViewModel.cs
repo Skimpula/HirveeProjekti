@@ -108,6 +108,7 @@ namespace HirveeProjekti.ViewModels
         public ICommand SelectInvoiceCommand { get; }
         public ICommand TogglePaymentStatusCommand { get; }
         public ICommand SendReminderCommand { get; }
+        public ICommand SendEmailInvoiceCommand { get; }
         public ICommand CreateInvoiceFromBookingCommand { get; }
 
         public InvoiceViewModel()
@@ -131,6 +132,7 @@ namespace HirveeProjekti.ViewModels
             PrintInvoiceToPdfCommand = new Command(PrintInvoiceToPdf, () => IsInvoiceSelected);
             TogglePaymentStatusCommand = new Command<int>(ToggleInvoicePaymentStatus);
             SendReminderCommand = new Command<int>(SendReminder);
+            SendEmailInvoiceCommand = new Command<int>(SendEmailInvoice);
             CreateInvoiceFromBookingCommand = new Command(CreateInvoiceFromBooking);
 
             SetInvoiceFilterCommand = new Command<string>(SetInvoiceFilter);
@@ -420,20 +422,115 @@ namespace HirveeProjekti.ViewModels
             }
         }
 
-        private void SendReminder(int laskuId)
+        private async void SendReminder(int laskuId)
         {
             try
             {
                 var invoice = Invoices.FirstOrDefault(i => i.LaskuId == laskuId);
-                if (invoice != null && !invoice.Maksettu)
+                if (invoice == null) return;
+
+                if (invoice.Maksettu)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Reminder sent for invoice {laskuId}");
-                    // Placeholder for sending reminder (email, SMS, etc.)
+                    InvoiceActionMessage = "Lasku on jo maksettu — muistutusta ei lähetetä.";
+                    return;
                 }
+
+                var booking = _bookingService.GetAllBookings()
+                    .FirstOrDefault(b => b.VarausId == invoice.VarausId);
+
+                var asiakasEmail = booking?.Asiakas?.Email;
+                var asiakasNimi  = booking?.Asiakas?.FullName ?? "Asiakas";
+
+                if (string.IsNullOrWhiteSpace(asiakasEmail))
+                {
+                    InvoiceActionMessage = "Asiakkaan sähköpostiosoite puuttuu.";
+                    return;
+                }
+
+                var aihe = $"Maksumuistutus – Lasku #{invoice.LaskuId}";
+                var teksti =
+                    $"Hei {asiakasNimi},\n\n" +
+                    $"Lasku #{invoice.LaskuId} (summa {invoice.Summa:F2} €) on edelleen maksamatta.\n" +
+                    $"Ole hyvä ja suorita maksu mahdollisimman pian.\n\n" +
+                    $"Ystävällisin terveisin,\nVillage Newbies Oy";
+
+                var message = new EmailMessage
+                {
+                    Subject = aihe,
+                    Body    = teksti,
+                    To      = new List<string> { asiakasEmail }
+                };
+
+                await Email.Default.ComposeAsync(message);
+                InvoiceActionMessage = $"Muistutussähköposti lähetetty: {asiakasEmail}";
+            }
+            catch (FeatureNotSupportedException)
+            {
+                InvoiceActionMessage = "Sähköpostiohjelma ei ole käytettävissä tällä laitteella.";
             }
             catch (Exception ex)
             {
+                InvoiceActionMessage = $"Virhe muistutuksen lähetyksessä: {ex.Message}";
                 System.Diagnostics.Debug.WriteLine($"Error sending reminder: {ex.Message}");
+            }
+        }
+
+        private async void SendEmailInvoice(int laskuId)
+        {
+            try
+            {
+                var invoice = Invoices.FirstOrDefault(i => i.LaskuId == laskuId);
+                if (invoice == null) return;
+
+                var booking = _bookingService.GetAllBookings()
+                    .FirstOrDefault(b => b.VarausId == invoice.VarausId);
+
+                var asiakasEmail = booking?.Asiakas?.Email;
+                var asiakasNimi  = booking?.Asiakas?.FullName ?? "Asiakas";
+
+                if (string.IsNullOrWhiteSpace(asiakasEmail))
+                {
+                    InvoiceActionMessage = "Asiakkaan sähköpostiosoite puuttuu.";
+                    return;
+                }
+
+                int nights = booking != null
+                    ? Math.Max(1, (booking.VarattuLoppuPvm - booking.VarattuAlkuPvm).Days)
+                    : 1;
+
+                var aihe = $"Lasku #{invoice.LaskuId} – Village Newbies Oy";
+                var teksti =
+                    $"Hei {asiakasNimi},\n\n" +
+                    $"Kiitos varauksestanne! Tässä laskutietonne:\n\n" +
+                    $"Lasku nro:   #{invoice.LaskuId}\n" +
+                    $"Varaus nro:  #{invoice.VarausId}\n" +
+                    (booking != null
+                        ? $"Mökki:       {booking.Mokki?.Mokkinimi ?? "-"}\n" +
+                          $"Aikaväli:    {booking.VarattuAlkuPvm:dd.MM.yyyy} – {booking.VarattuLoppuPvm:dd.MM.yyyy} ({nights} yötä)\n"
+                        : "") +
+                    $"\nSumma (sis. ALV):  {invoice.Summa:F2} €\n" +
+                    $"ALV osuus:         {invoice.Alv:F2} €\n" +
+                    $"Maksettu:          {(invoice.Maksettu ? "Kyllä" : "Ei")}\n\n" +
+                    $"Ystävällisin terveisin,\nVillage Newbies Oy\nSiilokatu 1, 90700 Oulu";
+
+                var message = new EmailMessage
+                {
+                    Subject = aihe,
+                    Body    = teksti,
+                    To      = new List<string> { asiakasEmail }
+                };
+
+                await Email.Default.ComposeAsync(message);
+                InvoiceActionMessage = $"Sähköpostilasku avattu lähettämistä varten: {asiakasEmail}";
+            }
+            catch (FeatureNotSupportedException)
+            {
+                InvoiceActionMessage = "Sähköpostiohjelma ei ole käytettävissä tällä laitteella.";
+            }
+            catch (Exception ex)
+            {
+                InvoiceActionMessage = $"Virhe laskun lähetyksessä: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error sending email invoice: {ex.Message}");
             }
         }
 

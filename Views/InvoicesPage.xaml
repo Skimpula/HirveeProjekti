@@ -2,204 +2,182 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
              x:Class="HirveeProjekti.Views.InvoicesPage"
-             Title="Laskut">
+             Title="Laskut"
+             BackgroundColor="#F5F5F5">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Padding="16" Spacing="0">
 
-            <!-- 🔹 Otsikko -->
-            <Label Text="Laskujen hallinta"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <!-- Luo lasku -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
-             <Label Text="Luo lasku varauksesta"
-                 FontSize="18"
-                 FontAttributes="Bold"/>
+                    <Label Text="🧾 Luo lasku varauksesta"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-             <Picker Title="Valitse varaus"
-                  ItemsSource="{Binding AvailableBookings}"
-                  ItemDisplayBinding="{Binding InvoiceCreationDisplay}"
-                  SelectedItem="{Binding SelectedBookingForInvoice}" />
+                    <Label Text="Valitse varaus" FontSize="13" TextColor="#757575" />
+                    <Picker Title="Valitse varaus"
+                            ItemsSource="{Binding AvailableBookings}"
+                            ItemDisplayBinding="{Binding InvoiceCreationDisplay}"
+                            SelectedItem="{Binding SelectedBookingForInvoice}"
+                            BackgroundColor="#EDE7F6" />
 
-             <Button Text="Luo lasku (mökin hinta × päivien määrä)"
-                  Command="{Binding CreateInvoiceFromBookingCommand}"
-                  BackgroundColor="#1976D2"
-                  TextColor="White"
-                  CornerRadius="8"
-                  HeightRequest="45" />
+                    <Button Text="➕ Luo lasku (mökin hinta × päivien määrä)"
+                            Command="{Binding CreateInvoiceFromBookingCommand}"
+                            BackgroundColor="#3949AB" TextColor="White"
+                            CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
 
-             <Label Text="{Binding InvoiceActionMessage}"
-                 TextColor="#1B5E20"
-                 IsVisible="{Binding HasInvoiceActionMessage}" />
+                    <Label Text="{Binding InvoiceActionMessage}"
+                           TextColor="#2E7D32" FontSize="13" FontAttributes="Bold"
+                           IsVisible="{Binding HasInvoiceActionMessage}"
+                           HorizontalOptions="Center" />
 
+                </VerticalStackLayout>
+            </Frame>
 
-                <!-- 📋 Lista laskuista -->
-                <Label Text="Kaikki laskut"
-                   FontSize="18"
-                   FontAttributes="Bold"/>
+            <!-- Laskujen lista -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
+                    <Label Text="📋 Kaikki laskut"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-            <HorizontalStackLayout Spacing="10" Margin="0,0,0,10">
-                <Button Text="Kaikki"
-                        Command="{Binding SetInvoiceFilterCommand}"
-                        CommandParameter="All"
-                        TextColor="White"
-                        CornerRadius="8">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="All">
-                            <Setter Property="BackgroundColor" Value="#1976D2" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="Paid">
-                            <Setter Property="BackgroundColor" Value="#607D8B" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="Unpaid">
-                            <Setter Property="BackgroundColor" Value="#607D8B" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Text="Maksetut"
-                        Command="{Binding SetInvoiceFilterCommand}"
-                        CommandParameter="Paid"
-                        TextColor="White"
-                        CornerRadius="8">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="Paid">
-                            <Setter Property="BackgroundColor" Value="#1976D2" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="All">
-                            <Setter Property="BackgroundColor" Value="#607D8B" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="Unpaid">
-                            <Setter Property="BackgroundColor" Value="#607D8B" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-                <Button Text="Maksamattomat"
-                        Command="{Binding SetInvoiceFilterCommand}"
-                        CommandParameter="Unpaid"
-                        TextColor="White"
-                        CornerRadius="8">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="Unpaid">
-                            <Setter Property="BackgroundColor" Value="#1976D2" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="All">
-                            <Setter Property="BackgroundColor" Value="#607D8B" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding InvoiceFilter, Mode=OneWay}"
-                                     Value="Paid">
-                            <Setter Property="BackgroundColor" Value="#607D8B" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
-            </HorizontalStackLayout>
-
-            <CollectionView ItemsSource="{Binding FilteredInvoices}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame BorderColor="LightGray"
-                               BackgroundColor="black"
-                               Padding="10"
-                               Margin="0,5"
-                               CornerRadius="5">
-                            <Frame.Triggers>
-                                <DataTrigger TargetType="Frame"
-                                             Binding="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectedInvoice.LaskuId}"
-                                             Value="{Binding LaskuId}">
-                                    <Setter Property="BackgroundColor" Value="#E0E0E0" />
+                    <HorizontalStackLayout Spacing="8" Margin="0,0,0,4">
+                        <Button Text="Kaikki"
+                                Command="{Binding SetInvoiceFilterCommand}"
+                                CommandParameter="All"
+                                TextColor="White"
+                                CornerRadius="8" HeightRequest="38" FontSize="13">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="All">
+                                    <Setter Property="BackgroundColor" Value="#3949AB" />
                                 </DataTrigger>
-                            </Frame.Triggers>
-                            <VerticalStackLayout Spacing="5">
-                                <VerticalStackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectInvoiceCommand}"
-                                        CommandParameter="{Binding .}"/>
-                                </VerticalStackLayout.GestureRecognizers>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="Paid">
+                                    <Setter Property="BackgroundColor" Value="#9E9E9E" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="Unpaid">
+                                    <Setter Property="BackgroundColor" Value="#9E9E9E" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Text="Maksetut"
+                                Command="{Binding SetInvoiceFilterCommand}"
+                                CommandParameter="Paid"
+                                TextColor="White"
+                                CornerRadius="8" HeightRequest="38" FontSize="13">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="Paid">
+                                    <Setter Property="BackgroundColor" Value="#3949AB" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="All">
+                                    <Setter Property="BackgroundColor" Value="#9E9E9E" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="Unpaid">
+                                    <Setter Property="BackgroundColor" Value="#9E9E9E" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Text="Maksamattomat"
+                                Command="{Binding SetInvoiceFilterCommand}"
+                                CommandParameter="Unpaid"
+                                TextColor="White"
+                                CornerRadius="8" HeightRequest="38" FontSize="13">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="Unpaid">
+                                    <Setter Property="BackgroundColor" Value="#3949AB" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="All">
+                                    <Setter Property="BackgroundColor" Value="#9E9E9E" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Button" Binding="{Binding InvoiceFilter, Mode=OneWay}" Value="Paid">
+                                    <Setter Property="BackgroundColor" Value="#9E9E9E" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </HorizontalStackLayout>
 
-                                <Label Text="{Binding LaskuId, StringFormat='Lasku ID: {0}'}"
-                                       FontAttributes="Bold"
-                                       TextColor="White"/>
-                                <Label Text="{Binding VarausId, StringFormat='Varaus ID: {0}'}"
-                                       TextColor="White"/>
-                                <Label Text="{Binding Summa, StringFormat='Summa: {0:F2} €'}"
-                                       TextColor="White"
-                                       FontAttributes="Bold"/>
-                                <Label Text="{Binding Alv, StringFormat='ALV: {0:F2} €'}"
-                                       TextColor="White"/>
-                                    <Label Text="{Binding TilaTeksti, StringFormat='Tila: {0}'}"
-                                       TextColor="White"/>
+                    <CollectionView ItemsSource="{Binding FilteredInvoices}"
+                                    EmptyView="Ei laskuja.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="#FAFAFA" BorderColor="#C5CAE9"
+                                       CornerRadius="8" Padding="12" Margin="0,4">
+                                    <Frame.Triggers>
+                                        <DataTrigger TargetType="Frame"
+                                                     Binding="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectedInvoice.LaskuId}"
+                                                     Value="{Binding LaskuId}">
+                                            <Setter Property="BackgroundColor" Value="#E8EAF6" />
+                                        </DataTrigger>
+                                    </Frame.Triggers>
+                                    <VerticalStackLayout Spacing="4">
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectInvoiceCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                        </VerticalStackLayout.GestureRecognizers>
+                                        <Grid ColumnDefinitions="4,*" ColumnSpacing="10">
+                                            <BoxView Grid.Column="0" BackgroundColor="#3949AB" CornerRadius="2" />
+                                            <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                                <Label Text="{Binding LaskuId, StringFormat='Lasku #{0}'}"
+                                                       FontAttributes="Bold" FontSize="15" TextColor="#1A237E" />
+                                                <Label Text="{Binding VarausId, StringFormat='Varaus #{0}'}"
+                                                       FontSize="13" TextColor="#37474F" />
+                                                <HorizontalStackLayout Spacing="12">
+                                                    <Label Text="{Binding Summa, StringFormat='💰 {0:F2} €'}"
+                                                           FontAttributes="Bold" FontSize="14" TextColor="#2E7D32" />
+                                                    <Label Text="{Binding Alv, StringFormat='ALV {0:F2} €'}"
+                                                           FontSize="12" TextColor="#546E7A" />
+                                                </HorizontalStackLayout>
+                                                <Label Text="{Binding TilaTeksti}"
+                                                       FontSize="12" TextColor="#546E7A" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        <HorizontalStackLayout Spacing="8" Margin="14,6,0,0">
+                                            <Button Text="💳 Vaihda tila"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TogglePaymentStatusCommand}"
+                                                    CommandParameter="{Binding LaskuId}"
+                                                    BackgroundColor="#388E3C" TextColor="White"
+                                                    CornerRadius="8" HeightRequest="38" FontSize="12"/>
+                                            <Button Text="📧 Lähetä"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendEmailInvoiceCommand}"
+                                                    CommandParameter="{Binding LaskuId}"
+                                                    BackgroundColor="#1976D2" TextColor="White"
+                                                    CornerRadius="8" HeightRequest="38" FontSize="12"/>
+                                            <Button Text="⚠️ Muistutus"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendReminderCommand}"
+                                                    CommandParameter="{Binding LaskuId}"
+                                                    BackgroundColor="#F57C00" TextColor="White"
+                                                    CornerRadius="8" HeightRequest="38" FontSize="12"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                                <HorizontalStackLayout Spacing="10">
-                                     <Button Text="Vaihda maksun tila"
-                                          Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.TogglePaymentStatusCommand}"
-                                            CommandParameter="{Binding LaskuId}"
-                                            BackgroundColor="#4CAF50"
-                                            TextColor="White"
-                                            CornerRadius="8"
-                                            HeightRequest="40"/>
+                </VerticalStackLayout>
+            </Frame>
 
-                                    <Button Text="Lähetä muistutus"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendReminderCommand}"
-                                            CommandParameter="{Binding LaskuId}"
-                                            BackgroundColor="#FFC107"
-                                            TextColor="Black"
-                                            CornerRadius="8"
-                                            HeightRequest="40"/>
-                                </HorizontalStackLayout>
+            <!-- Valitun laskun tiedot -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,24" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
-                            </VerticalStackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                    <Label Text="📄 Valitun laskun tiedot"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-            <!-- 📄 Valitun laskun tiedot -->
-            <BoxView Color="LightGray"
-                     HeightRequest="2"
-                     Margin="0,10,0,10"/>
-
-
-                 <Label Text="Valitun laskun tiedot"
-                     FontSize="18"
-                     FontAttributes="Bold"/>
-
-              
-
-            <Frame BorderColor="LightBlue"
-                   Padding="15"
-                   Margin="0,5"
-                   CornerRadius="8">
-                   
-                <VerticalStackLayout Spacing="8">
                     <Label Text="{Binding SelectedInvoiceDetails}"
-                           LineBreakMode="WordWrap"/>
-                              
-                    <Button Text="Tulosta PDF"
-                      Command="{Binding PrintInvoiceToPdfCommand}"
-                      IsEnabled="{Binding IsInvoiceSelected}"
-                      BackgroundColor="#607D8B"
-                      TextColor="White"
-                      CornerRadius="8"
-                      HeightRequest="45"
-                      Margin="0,0,0,10" />
+                           FontSize="13" TextColor="#37474F"
+                           LineBreakMode="WordWrap" />
+
+                    <Button Text="🖨️ Tulosta PDF"
+                            Command="{Binding PrintInvoiceToPdfCommand}"
+                            IsEnabled="{Binding IsInvoiceSelected}"
+                            BackgroundColor="#3949AB" TextColor="White"
+                            CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
+
                 </VerticalStackLayout>
             </Frame>
 

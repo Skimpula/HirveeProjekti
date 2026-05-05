@@ -2,88 +2,119 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
              x:Class="HirveeProjekti.Views.CustomersPage"
-             Title="Asiakkaat">
+             Title="Asiakkaat"
+             BackgroundColor="#F5F5F5">
 
-<ContentPage.BindingContext>
-    <vm:CustomerViewModel />
-</ContentPage.BindingContext>
+    <ContentPage.BindingContext>
+        <vm:CustomerViewModel />
+    </ContentPage.BindingContext>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Padding="16" Spacing="0">
 
-            <!-- 🔹 Otsikko -->
-            <Label Text="Asiakkaiden hallinta"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+            <!-- Lisää uusi asiakas -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
 
-            <!-- ➕ Lisää asiakas -->
-            <Label Text="Lisää uusi asiakas" FontAttributes="Bold"/>
+                    <Label Text="👤 Lisää uusi asiakas"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-            <Entry Placeholder="Etunimi"
-                   Text="{Binding NewCustomerFirstName}" />
-            <Entry Placeholder="Sukunimi"
-                   Text="{Binding NewCustomerLastName}" />
-            <Entry Placeholder="Lähiosoite"
-                   Text="{Binding NewCustomerAddress}" />
-            <Entry Placeholder="Postinumero"
-                   Text="{Binding NewCustomerPostalCode}" />
-            <Entry Placeholder="Sähköposti"
-                   Keyboard="Email"
-                   Text="{Binding NewCustomerEmail}" />
-            <Entry Placeholder="Puhelinnumero"
-                   Keyboard="Telephone"
-                   Text="{Binding NewCustomerPhone}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Etunimi" FontSize="13" TextColor="#757575" />
+                            <Entry Placeholder="Etunimi"
+                                   Text="{Binding NewCustomerFirstName}"
+                                   BackgroundColor="#EDE7F6" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Sukunimi" FontSize="13" TextColor="#757575" />
+                            <Entry Placeholder="Sukunimi"
+                                   Text="{Binding NewCustomerLastName}"
+                                   BackgroundColor="#EDE7F6" />
+                        </VerticalStackLayout>
+                    </Grid>
 
-            <Button Text="Lisää asiakas"
-                    Command="{Binding AddCustomerCommand}"
-                    BackgroundColor="#4CAF50"
-                    TextColor="White"
-                    CornerRadius="8"
-                    HeightRequest="50" />
+                    <Label Text="Lähiosoite" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Lähiosoite"
+                           Text="{Binding NewCustomerAddress}"
+                           BackgroundColor="#EDE7F6" />
 
-            <!-- ⚠️ Virheviesti -->
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="Red"
-                   IsVisible="{Binding HasError}" />
+                    <Label Text="Postinumero" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Postinumero"
+                           Text="{Binding NewCustomerPostalCode}"
+                           BackgroundColor="#EDE7F6" />
 
-            <!-- 🔍 Haku -->
-            <Label Text="Nykyiset asiakkaat"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   Margin="0,20,0,0"/>
+                    <Label Text="Sähköposti" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Sähköposti"
+                           Keyboard="Email"
+                           Text="{Binding NewCustomerEmail}"
+                           BackgroundColor="#EDE7F6" />
 
-            <Entry Placeholder="Etsi asiakasta nimellä..."
-                   Text="{Binding SearchText}" />
+                    <Label Text="Puhelinnumero" FontSize="13" TextColor="#757575" />
+                    <Entry Placeholder="Puhelinnumero"
+                           Keyboard="Telephone"
+                           Text="{Binding NewCustomerPhone}"
+                           BackgroundColor="#EDE7F6" />
 
-            <CollectionView ItemsSource="{Binding Customers}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame BorderColor="LightGray"
-                               Padding="10"
-                               Margin="0,5"
-                               CornerRadius="5">
-                            <VerticalStackLayout Spacing="5">
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="#C62828" FontSize="13"
+                           IsVisible="{Binding HasError}" />
 
-                                <Label Text="{Binding FullName, StringFormat='Nimi: {0}'}"
-                                       FontAttributes="Bold"/>
-                                <Label Text="{Binding Lahiosoite, StringFormat='Osoite: {0}'}"/>
-                                <Label Text="{Binding Postinro, StringFormat='Postinumero: {0}'}"/>
-                                <Label Text="{Binding Email, StringFormat='Sähköposti: {0}'}"/>
-                                <Label Text="{Binding Puhelinnro, StringFormat='Puhelin: {0}'}"/>
+                    <Button Text="➕ Lisää asiakas"
+                            Command="{Binding AddCustomerCommand}"
+                            BackgroundColor="#3949AB" TextColor="White"
+                            CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
 
-                                <Button Text="Poista"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCustomerCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="#F44336"
-                                        TextColor="White"
-                                        CornerRadius="8"
-                                        HeightRequest="40"/>
-                            </VerticalStackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Asiakkaiden lista -->
+            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,24" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label Text="👥 Nykyiset asiakkaat"
+                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
+
+                    <Entry Placeholder="🔍 Etsi asiakasta nimellä..."
+                           Text="{Binding SearchText}"
+                           BackgroundColor="#EDE7F6" />
+
+                    <CollectionView ItemsSource="{Binding Customers}"
+                                    EmptyView="Ei asiakkaita.">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="#FAFAFA" BorderColor="#C5CAE9"
+                                       CornerRadius="8" Padding="12" Margin="0,4">
+                                    <Grid ColumnDefinitions="4,*" ColumnSpacing="10">
+                                        <BoxView Grid.Column="0" BackgroundColor="#3949AB" CornerRadius="2" />
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                            <Label Text="{Binding FullName}"
+                                                   FontAttributes="Bold" FontSize="15" TextColor="#1A237E" />
+                                            <Label Text="{Binding Lahiosoite, StringFormat='🏠 {0}'}"
+                                                   FontSize="13" TextColor="#37474F" />
+                                            <Label Text="{Binding Postinro, StringFormat='📮 {0}'}"
+                                                   FontSize="12" TextColor="#546E7A" />
+                                            <Label Text="{Binding Email, StringFormat='📧 {0}'}"
+                                                   FontSize="12" TextColor="#546E7A" />
+                                            <Label Text="{Binding Puhelinnro, StringFormat='📞 {0}'}"
+                                                   FontSize="12" TextColor="#546E7A" />
+                                            <Button Text="🗑️ Poista"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCustomerCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#E53935" TextColor="White"
+                                                    CornerRadius="8" HeightRequest="38" FontSize="13"
+                                                    HorizontalOptions="Start" Margin="0,4,0,0"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </Frame>
 
         </VerticalStackLayout>
     </ScrollView>
