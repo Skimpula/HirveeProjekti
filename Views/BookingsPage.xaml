@@ -1,144 +1,175 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:HirveeProjekti.ViewModels"
              x:Class="HirveeProjekti.Views.BookingsPage"
              Title="Varaukset"
              BackgroundColor="#F5F5F5">
 
-    <ContentPage.BindingContext>
-        <vm:BookingViewModel />
-    </ContentPage.BindingContext>
-
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="0">
 
-            <!-- Uusi varaus -lomake -->
-            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+            
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="16"
+                   Margin="0,0,0,16">
+
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="📅 Uusi varaus"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
-                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#1A237E"/>
 
-                    <Label Text="Asiakas" FontSize="13" TextColor="#757575" />
+                    <BoxView HeightRequest="1"
+                             Color="#E8EAF6"/>
+
+                    <Label Text="Asiakas" TextColor="Black"/>
                     <Picker Title="Valitse asiakas"
                             ItemsSource="{Binding Customers}"
                             ItemDisplayBinding="{Binding FullName}"
                             SelectedItem="{Binding SelectedCustomer}"
-                            BackgroundColor="#EDE7F6" />
+                            BackgroundColor="#EDE7F6"/>
 
-                    <Label Text="Mökki" FontSize="13" TextColor="#757575" />
+                    <Label Text="Mökki" TextColor="Black"/>
                     <Picker Title="Valitse mökki"
                             ItemsSource="{Binding Cottages}"
                             ItemDisplayBinding="{Binding Mokkinimi}"
                             SelectedItem="{Binding SelectedCottage}"
-                            BackgroundColor="#EDE7F6" />
+                            BackgroundColor="#EDE7F6"/>
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                        <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Alkupäivä" FontSize="13" TextColor="#757575" />
-                            <DatePicker Date="{Binding StartDate}" Format="dd.MM.yyyy" BackgroundColor="#EDE7F6" />
+
+                        <VerticalStackLayout>
+                            <Label Text="Alkupäivä" TextColor="Black"/>
+                            <DatePicker Date="{Binding StartDate}"
+                                        Format="dd.MM.yyyy"
+                                        BackgroundColor="#EDE7F6"/>
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Text="Loppupäivä" FontSize="13" TextColor="#757575" />
-                            <DatePicker Date="{Binding EndDate}" Format="dd.MM.yyyy" BackgroundColor="#EDE7F6" />
+
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Loppupäivä" TextColor="Black"/>
+                            <DatePicker Date="{Binding EndDate}"
+                                        Format="dd.MM.yyyy"
+                                        BackgroundColor="#EDE7F6"/>
                         </VerticalStackLayout>
+
                     </Grid>
 
                     <Label Text="{Binding ErrorMessage}"
-                           TextColor="#C62828" FontSize="13"
-                           IsVisible="{Binding HasError}" />
+                           TextColor="Red"
+                           IsVisible="{Binding HasError}"/>
 
-                    <Button Text="{Binding AddButtonText}"
+                    <Button Text="Tee varaus"
                             Command="{Binding AddBookingCommand}"
-                            BackgroundColor="#3949AB" TextColor="White"
-                            CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
-
-                    <Button Text="Peruuta muokkaus"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelEditCommand}"
-                            BackgroundColor="#757575" TextColor="White"
-                            CornerRadius="8" HeightRequest="40"
-                            IsVisible="{Binding IsEditMode}" />
+                            BackgroundColor="#3949AB"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="46"/>
 
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Varauskalenteri -->
-            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,16" HasShadow="True">
+            
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="16"
+                   Margin="0,0,0,16">
+
                 <VerticalStackLayout Spacing="10">
 
-                    <Label Text="🗓️ Varauskalenteri (mökki/päivä)"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1B5E20" />
-                    <BoxView HeightRequest="1" Color="#C8E6C9" Margin="0,0,0,4" />
+                    <Label Text="📅 Varauskalenteri"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#1A237E"/>
 
-                    <ScrollView Orientation="Both" HeightRequest="300">
+                    <BoxView HeightRequest="1"
+                             Color="#E8EAF6"/>
+
+                    <ScrollView Orientation="Both"
+                                HeightRequest="280"
+                                BackgroundColor="#E3F2FD">
+
                         <Grid x:Name="CalendarGrid"
-                              ColumnSpacing="2" RowSpacing="2"
-                              Padding="5">
-                            <Grid.BindingContext>
-                                <Binding Path="CalendarViewModel" />
-                            </Grid.BindingContext>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                        </Grid>
+                              ColumnSpacing="2"
+                              RowSpacing="2"
+                              BackgroundColor="#90CAF9"
+                              Padding="4" />
+
                     </ScrollView>
 
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- Varauslista -->
-            <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="0,0,0,24" HasShadow="True">
+            
+            <Frame BackgroundColor="White"
+                   CornerRadius="12"
+                   Padding="16">
+
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="📋 Nykyiset varaukset"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
-                    <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#1A237E"/>
+
+                    <BoxView HeightRequest="1"
+                             Color="#E8EAF6"/>
 
                     <CollectionView ItemsSource="{Binding Bookings}"
                                     EmptyView="Ei varauksia.">
+
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Frame BackgroundColor="#FAFAFA" BorderColor="#C5CAE9"
-                                       CornerRadius="8" Padding="12" Margin="0,4">
-                                    <Grid ColumnDefinitions="4,*" ColumnSpacing="10">
-                                        <BoxView Grid.Column="0" BackgroundColor="#3949AB" CornerRadius="2" />
-                                        <VerticalStackLayout Grid.Column="1" Spacing="3">
-                                            <Label Text="{Binding VarausId, StringFormat='Varaus #{0}'}"
-                                                   FontAttributes="Bold" FontSize="15" TextColor="#1A237E" />
-                                            <Label Text="{Binding Asiakas.FullName, StringFormat='👤 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
-                                            <Label Text="{Binding Mokki.Mokkinimi, StringFormat='🏡 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
-                                            <HorizontalStackLayout Spacing="6">
-                                                <Label Text="{Binding VarattuAlkuPvm, StringFormat='📅 {0:dd.MM.yyyy}'}"
-                                                       FontSize="12" TextColor="#546E7A" />
-                                                <Label Text="→" TextColor="#9E9E9E" FontSize="12" />
-                                                <Label Text="{Binding VarattuLoppuPvm, StringFormat='{0:dd.MM.yyyy}'}"
-                                                       FontSize="12" TextColor="#546E7A" />
-                                            </HorizontalStackLayout>
-                                            <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
-                                                <Button Text="✏️ Muokkaa"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditBookingCommand}"
-                                                        CommandParameter="{Binding .}"
-                                                        BackgroundColor="#1976D2" TextColor="White"
-                                                        CornerRadius="8" HeightRequest="38" FontSize="13"/>
-                                                <Button Text="🗑️ Poista"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveBookingCommand}"
-                                                        CommandParameter="{Binding .}"
-                                                        BackgroundColor="#E53935" TextColor="White"
-                                                        CornerRadius="8" HeightRequest="38" FontSize="13"/>
-                                            </HorizontalStackLayout>
-                                        </VerticalStackLayout>
-                                    </Grid>
+
+                                <Frame BackgroundColor="#FAFAFA"
+                                       BorderColor="#C5CAE9"
+                                       CornerRadius="8"
+                                       Padding="12"
+                                       Margin="0,4">
+
+                                    <VerticalStackLayout Spacing="4">
+
+                                        <Label Text="{Binding VarausId, StringFormat='Varaus #{0}'}"
+                                               FontAttributes="Bold"
+                                               TextColor="Black"/>
+
+                                        <Label Text="{Binding Asiakas.FullName}"
+                                               TextColor="Black"/>
+
+                                        <Label Text="{Binding Mokki.Mokkinimi}"
+                                               TextColor="Black"/>
+
+                                        <Label Text="{Binding VarattuAlkuPvm, StringFormat='📅 {0:dd.MM.yyyy}'}"
+                                               TextColor="Black"/>
+
+                                        <Label Text="{Binding VarattuLoppuPvm, StringFormat='→ {0:dd.MM.yyyy}'}"
+                                               TextColor="Black"/>
+
+                                        <HorizontalStackLayout Spacing="8">
+
+                                            <Button Text="✏️"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditBookingCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#1976D2"
+                                                    TextColor="White"
+                                                    CornerRadius="6"/>
+
+                                            <Button Text="🗑️"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveBookingCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#E53935"
+                                                    TextColor="White"
+                                                    CornerRadius="6"/>
+
+                                        </HorizontalStackLayout>
+
+                                    </VerticalStackLayout>
+
                                 </Frame>
+
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
+
                     </CollectionView>
 
                 </VerticalStackLayout>
