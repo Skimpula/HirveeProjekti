@@ -13,15 +13,17 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="🧾 Luo lasku varauksesta"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-                    <Label Text="Valitse varaus" FontSize="13" TextColor="#757575" />
+                    <Label Text="Valitse varaus" FontSize="13" TextColor="Black" />
                     <Picker Title="Valitse varaus"
                             ItemsSource="{Binding AvailableBookings}"
                             ItemDisplayBinding="{Binding InvoiceCreationDisplay}"
                             SelectedItem="{Binding SelectedBookingForInvoice}"
-                            BackgroundColor="#EDE7F6" />
+                            BackgroundColor="#EDE7F6"
+                            TextColor="Black"
+                            TitleColor="#666666" />
 
                     <Button Text="➕ Luo lasku (mökin hinta × päivien määrä)"
                             Command="{Binding CreateInvoiceFromBookingCommand}"
@@ -29,7 +31,7 @@
                             CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
 
                     <Label Text="{Binding InvoiceActionMessage}"
-                           TextColor="#2E7D32" FontSize="13" FontAttributes="Bold"
+                           TextColor="Black" FontSize="13" FontAttributes="Bold"
                            IsVisible="{Binding HasInvoiceActionMessage}"
                            HorizontalOptions="Center" />
 
@@ -41,7 +43,7 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="📋 Kaikki laskut"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
                     <HorizontalStackLayout Spacing="8" Margin="0,0,0,4">
@@ -121,17 +123,17 @@
                                             <BoxView Grid.Column="0" BackgroundColor="#3949AB" CornerRadius="2" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="3">
                                                 <Label Text="{Binding LaskuId, StringFormat='Lasku #{0}'}"
-                                                       FontAttributes="Bold" FontSize="15" TextColor="#1A237E" />
+                                                       FontAttributes="Bold" FontSize="15" TextColor="Black" />
                                                 <Label Text="{Binding VarausId, StringFormat='Varaus #{0}'}"
-                                                       FontSize="13" TextColor="#37474F" />
+                                                       FontSize="13" TextColor="Black" />
                                                 <HorizontalStackLayout Spacing="12">
                                                     <Label Text="{Binding Summa, StringFormat='💰 {0:F2} €'}"
-                                                           FontAttributes="Bold" FontSize="14" TextColor="#2E7D32" />
+                                                           FontAttributes="Bold" FontSize="14" TextColor="Black" />
                                                     <Label Text="{Binding Alv, StringFormat='ALV {0:F2} €'}"
-                                                           FontSize="12" TextColor="#546E7A" />
+                                                           FontSize="12" TextColor="Black" />
                                                 </HorizontalStackLayout>
                                                 <Label Text="{Binding TilaTeksti}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                             </VerticalStackLayout>
                                         </Grid>
                                         <HorizontalStackLayout Spacing="8" Margin="14,6,0,0">
@@ -165,11 +167,11 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="📄 Valitun laskun tiedot"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
                     <Label Text="{Binding SelectedInvoiceDetails}"
-                           FontSize="13" TextColor="#37474F"
+                           FontSize="13" TextColor="Black"
                            LineBreakMode="WordWrap" />
 
                     <Button Text="🖨️ Tulosta PDF"

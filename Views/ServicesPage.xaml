@@ -17,38 +17,46 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="🛎️ Lisää uusi palvelu"
-                           FontSize="20" FontAttributes="Bold" TextColor="#4A148C" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E1BEE7" Margin="0,0,0,4" />
 
-                    <Label Text="Palvelun nimi" FontSize="13" TextColor="#757575" />
+                    <Label Text="Palvelun nimi" FontSize="13" TextColor="Black" />
                     <Entry Placeholder="Palvelun nimi"
                            Text="{Binding NewServiceName}"
-                           BackgroundColor="#F3E5F5" />
+                           BackgroundColor="#F3E5F5"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
 
-                    <Label Text="Kuvaus" FontSize="13" TextColor="#757575" />
+                    <Label Text="Kuvaus" FontSize="13" TextColor="Black" />
                     <Entry Placeholder="Kuvaus"
                            Text="{Binding NewServiceDescription}"
-                           BackgroundColor="#F3E5F5" />
+                           BackgroundColor="#F3E5F5"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Hinta (€)" FontSize="13" TextColor="#757575" />
+                            <Label Text="Hinta (€)" FontSize="13" TextColor="Black" />
                             <Entry Placeholder="Hinta"
                                    Keyboard="Numeric"
                                    Text="{Binding NewServicePrice}"
-                                   BackgroundColor="#F3E5F5" />
+                                   BackgroundColor="#F3E5F5"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Text="ALV (%)" FontSize="13" TextColor="#757575" />
+                            <Label Text="ALV (%)" FontSize="13" TextColor="Black" />
                             <Entry Placeholder="ALV"
                                    Keyboard="Numeric"
                                    Text="{Binding NewServiceVAT}"
-                                   BackgroundColor="#F3E5F5" />
+                                   BackgroundColor="#F3E5F5"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
                         </VerticalStackLayout>
                     </Grid>
 
                     <Label Text="{Binding ErrorMessage}"
-                           TextColor="#C62828" FontSize="13"
+                           TextColor="Black" FontSize="13"
                            IsVisible="{Binding HasError}" />
 
                     <Button Text="➕ Lisää palvelu"
@@ -64,7 +72,7 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="📋 Nykyiset palvelut"
-                           FontSize="20" FontAttributes="Bold" TextColor="#4A148C" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E1BEE7" Margin="0,0,0,4" />
 
                     <CollectionView ItemsSource="{Binding Services}"
@@ -77,14 +85,14 @@
                                         <BoxView Grid.Column="0" BackgroundColor="#7B1FA2" CornerRadius="2" />
                                         <VerticalStackLayout Grid.Column="1" Spacing="3">
                                             <Label Text="{Binding Nimi}"
-                                                   FontAttributes="Bold" FontSize="15" TextColor="#4A148C" />
+                                                   FontAttributes="Bold" FontSize="15" TextColor="Black" />
                                             <Label Text="{Binding Kuvaus, StringFormat='📝 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
+                                                   FontSize="13" TextColor="Black" />
                                             <HorizontalStackLayout Spacing="12">
                                                 <Label Text="{Binding Hinta, StringFormat='💰 {0:F2} €'}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                                 <Label Text="{Binding Alv, StringFormat='ALV {0:F2}%'}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                             </HorizontalStackLayout>
                                             <Button Text="🗑️ Poista"
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteServiceCommand}"

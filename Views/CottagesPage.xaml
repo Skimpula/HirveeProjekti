@@ -18,50 +18,62 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="🏡 Lisää uusi mökki"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
-                    <Label Text="Mökin nimi" FontSize="13" TextColor="#757575" />
+                    <Label Text="Mökin nimi" FontSize="13" TextColor="Black" />
                     <Entry Placeholder="Mökin nimi"
                            Text="{Binding NewCottageName}"
-                           BackgroundColor="#EDE7F6" />
+                           BackgroundColor="#EDE7F6"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
 
-                    <Label Text="Alue" FontSize="13" TextColor="#757575" />
+                    <Label Text="Alue" FontSize="13" TextColor="Black" />
                     <Picker Title="Valitse alue"
                             ItemsSource="{Binding Areas}"
                             ItemDisplayBinding="{Binding Nimi}"
                             SelectedItem="{Binding SelectedArea}"
-                            BackgroundColor="#EDE7F6" />
+                            BackgroundColor="#EDE7F6"
+                            TextColor="Black"
+                            TitleColor="#666666" />
 
-                    <Label Text="Osoite" FontSize="13" TextColor="#757575" />
+                    <Label Text="Osoite" FontSize="13" TextColor="Black" />
                     <Entry Placeholder="Osoite"
                            Text="{Binding NewCottageAddress}"
-                           BackgroundColor="#EDE7F6" />
+                           BackgroundColor="#EDE7F6"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Hinta (€/yö)" FontSize="13" TextColor="#757575" />
+                            <Label Text="Hinta (€/yö)" FontSize="13" TextColor="Black" />
                             <Entry Placeholder="Hinta"
                                    Keyboard="Numeric"
                                    Text="{Binding NewCottagePrice}"
-                                   BackgroundColor="#EDE7F6" />
+                                   BackgroundColor="#EDE7F6"
+                                   TextColor="Black"
+                                   PlaceholderColor="#666666" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Text="Henkilömäärä" FontSize="13" TextColor="#757575" />
+                            <Label Text="Henkilömäärä" FontSize="13" TextColor="Black" />
                             <Entry Placeholder="Henkilömäärä"
                                    Keyboard="Numeric"
                                    Text="{Binding NewCottageCapacity}"
-                                   BackgroundColor="#EDE7F6" />
+                                   BackgroundColor="#EDE7F6"
+                                   TextColor="Black"
+                                   PlaceholderColor="#666666" />
                         </VerticalStackLayout>
                     </Grid>
 
-                    <Label Text="Varustelu" FontSize="13" TextColor="#757575" />
+                    <Label Text="Varustelu" FontSize="13" TextColor="Black" />
                     <Entry Placeholder="Varustelu"
                            Text="{Binding NewCottageEquipment}"
-                           BackgroundColor="#EDE7F6" />
+                           BackgroundColor="#EDE7F6"
+                           TextColor="Black"
+                           PlaceholderColor="#666666" />
 
                     <Label Text="{Binding ErrorMessage}"
-                           TextColor="#C62828" FontSize="13"
+                           TextColor="Black" FontSize="13"
                            IsVisible="{Binding HasError}" />
 
                     <Button Text="➕ Lisää mökki"
@@ -77,24 +89,26 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="🔍 Hae vapaita mökkejä"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1B5E20" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#C8E6C9" Margin="0,0,0,4" />
 
-                    <Label Text="Alue" FontSize="13" TextColor="#757575" />
+                    <Label Text="Alue" FontSize="13" TextColor="Black" />
                     <Picker Title="Valitse alue"
                             ItemsSource="{Binding SearchAreas}"
                             ItemDisplayBinding="{Binding Nimi}"
                             SelectedItem="{Binding SelectedSearchArea}"
-                            BackgroundColor="#E8F5E9" />
+                            BackgroundColor="#E8F5E9"
+                            TextColor="Black"
+                            TitleColor="#666666" />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label Text="Alkaen" FontSize="13" TextColor="#757575" />
-                            <DatePicker Date="{Binding SearchStartDate}" Format="dd.MM.yyyy" BackgroundColor="#E8F5E9" />
+                            <Label Text="Alkaen" FontSize="13" TextColor="Black" />
+                            <DatePicker Date="{Binding SearchStartDate}" Format="dd.MM.yyyy" BackgroundColor="#E8F5E9" TextColor="Black" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="4">
-                            <Label Text="Päättyen" FontSize="13" TextColor="#757575" />
-                            <DatePicker Date="{Binding SearchEndDate}" Format="dd.MM.yyyy" BackgroundColor="#E8F5E9" />
+                            <Label Text="Päättyen" FontSize="13" TextColor="Black" />
+                            <DatePicker Date="{Binding SearchEndDate}" Format="dd.MM.yyyy" BackgroundColor="#E8F5E9" TextColor="Black" />
                         </VerticalStackLayout>
                     </Grid>
 
@@ -104,7 +118,7 @@
                             CornerRadius="8" HeightRequest="46" FontAttributes="Bold" />
 
                     <Label Text="{Binding SearchMessage}"
-                           TextColor="#1B5E20" FontSize="13" FontAttributes="Bold"
+                           TextColor="Black" FontSize="13" FontAttributes="Bold"
                            IsVisible="{Binding HasSearchMessage}"
                            HorizontalOptions="Center" />
 
@@ -118,19 +132,19 @@
                                         <BoxView Grid.Column="0" BackgroundColor="#388E3C" CornerRadius="2" />
                                         <VerticalStackLayout Grid.Column="1" Spacing="3">
                                             <Label Text="{Binding Mokkinimi}"
-                                                   FontAttributes="Bold" FontSize="15" TextColor="#1B5E20" />
+                                                   FontAttributes="Bold" FontSize="15" TextColor="Black" />
                                             <Label Text="{Binding AreaName, StringFormat='📍 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
+                                                   FontSize="13" TextColor="Black" />
                                             <Label Text="{Binding Katuosoite, StringFormat='🏠 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
+                                                   FontSize="13" TextColor="Black" />
                                             <HorizontalStackLayout Spacing="12">
                                                 <Label Text="{Binding Hinta, StringFormat='💰 {0:F2} €/yö'}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                                 <Label Text="{Binding Henkilomaara, StringFormat='👥 {0} hlö'}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                             </HorizontalStackLayout>
                                             <Label Text="{Binding Varustelu, StringFormat='⚙️ {0}'}"
-                                                   FontSize="12" TextColor="#546E7A" />
+                                                   FontSize="12" TextColor="Black" />
                                         </VerticalStackLayout>
                                     </Grid>
                                 </Frame>
@@ -146,7 +160,7 @@
                 <VerticalStackLayout Spacing="10">
 
                     <Label Text="🏘️ Nykyiset mökit"
-                           FontSize="20" FontAttributes="Bold" TextColor="#1A237E" />
+                           FontSize="20" FontAttributes="Bold" TextColor="Black" />
                     <BoxView HeightRequest="1" Color="#E8EAF6" Margin="0,0,0,4" />
 
                     <CollectionView ItemsSource="{Binding Cottages}"
@@ -159,19 +173,19 @@
                                         <BoxView Grid.Column="0" BackgroundColor="#3949AB" CornerRadius="2" />
                                         <VerticalStackLayout Grid.Column="1" Spacing="3">
                                             <Label Text="{Binding Mokkinimi}"
-                                                   FontAttributes="Bold" FontSize="15" TextColor="#1A237E" />
+                                                   FontAttributes="Bold" FontSize="15" TextColor="Black" />
                                             <Label Text="{Binding AreaName, StringFormat='📍 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
+                                                   FontSize="13" TextColor="Black" />
                                             <Label Text="{Binding Katuosoite, StringFormat='🏠 {0}'}"
-                                                   FontSize="13" TextColor="#37474F" />
+                                                   FontSize="13" TextColor="Black" />
                                             <HorizontalStackLayout Spacing="12">
                                                 <Label Text="{Binding Hinta, StringFormat='💰 {0:F2} €'}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                                 <Label Text="{Binding Henkilomaara, StringFormat='👥 {0} hlö'}"
-                                                       FontSize="12" TextColor="#546E7A" />
+                                                       FontSize="12" TextColor="Black" />
                                             </HorizontalStackLayout>
                                             <Label Text="{Binding Varustelu, StringFormat='⚙️ {0}'}"
-                                                   FontSize="12" TextColor="#546E7A" />
+                                                   FontSize="12" TextColor="Black" />
                                             <Button Text="🗑️ Poista"
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCottageCommand}"
                                                     CommandParameter="{Binding .}"
