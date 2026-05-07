@@ -1,72 +1,74 @@
-﻿using HirveeProjekti.Models;
+using HirveeProjekti.Models;
+using SQLite;
+
 namespace HirveeProjekti.Services
 {
     public class ServiceOfBookingsService
     {
-        private readonly List<ServiceOfBookings> items = new List<ServiceOfBookings>();
+        private readonly SQLiteConnection _db;
 
-        // Palauttaa kaikki varauksen palvelut
-        public List<ServiceOfBookings> GetAll()
+        public ServiceOfBookingsService()
         {
-            return items;
+            var dbPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "vn.db");
+            _db = new SQLiteConnection(dbPath);
         }
 
-        // Palauttaa yhden varauksen palvelut
+        public List<ServiceOfBookings> GetAll()
+        {
+            return _db.Table<ServiceOfBookings>().ToList();
+        }
+
         public List<ServiceOfBookings> GetByVarausId(int varausId)
         {
-            return items
+            return _db.Table<ServiceOfBookings>()
                 .Where(x => x.VarausId == varausId)
                 .ToList();
         }
 
-        // Lisää palvelu varaukseen
-        // Jos sama palvelu on jo lisätty, kasvatetaan määrää
         public void Add(ServiceOfBookings item)
         {
-            var existing = items.FirstOrDefault(x =>
-                x.VarausId == item.VarausId &&
-                x.PalveluId == item.PalveluId);
+            var existing = _db.Table<ServiceOfBookings>()
+                .FirstOrDefault(x => x.VarausId == item.VarausId && x.PalveluId == item.PalveluId);
 
             if (existing != null)
             {
                 existing.Lkm += item.Lkm;
+                _db.Update(existing);
             }
             else
             {
-                items.Add(item);
+                _db.Insert(item);
             }
         }
 
-        // Päivitä palvelun määrä varauksessa
         public void UpdateLkm(int varausId, int palveluId, int newLkm)
         {
-            var item = items.FirstOrDefault(x =>
-                x.VarausId == varausId &&
-                x.PalveluId == palveluId);
-
+            var item = _db.Table<ServiceOfBookings>()
+                .FirstOrDefault(x => x.VarausId == varausId && x.PalveluId == palveluId);
             if (item != null)
             {
                 item.Lkm = newLkm;
+                _db.Update(item);
             }
         }
 
-        // Poista yksi palvelu varauksesta
         public void Delete(int varausId, int palveluId)
         {
-            var item = items.FirstOrDefault(x =>
-                x.VarausId == varausId &&
-                x.PalveluId == palveluId);
-
+            var item = _db.Table<ServiceOfBookings>()
+                .FirstOrDefault(x => x.VarausId == varausId && x.PalveluId == palveluId);
             if (item != null)
-            {
-                items.Remove(item);
-            }
+                _db.Delete(item);
         }
 
-        // Poista kaikki palvelut varauksesta 
         public void DeleteByVarausId(int varausId)
         {
-            items.RemoveAll(x => x.VarausId == varausId);
+            var items = _db.Table<ServiceOfBookings>()
+                .Where(x => x.VarausId == varausId)
+                .ToList();
+            foreach (var item in items)
+                _db.Delete(item);
         }
     }
 }

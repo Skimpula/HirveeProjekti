@@ -23,6 +23,7 @@ namespace HirveeProjekti.Services
                 _db.CreateTable<Booking>();
                 _db.CreateTable<Service>();
                 _db.CreateTable<Invoice>();
+                _db.CreateTable<ServiceOfBookings>();
 
                 System.Diagnostics.Debug.WriteLine("All tables created successfully");
 
